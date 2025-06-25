@@ -45,7 +45,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <div className="flex items-center gap-2">SOME footer</div>
+        <div className="flex items-center gap-2">SOME footers</div>
       </footer>
     </div>
   );
