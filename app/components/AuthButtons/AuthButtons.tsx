@@ -1,11 +1,11 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
+import SignOutButton from "../SignOutButton/SignOutButton";
 
 export default function AuthButtons() {
   const { data: session, status } = useSession();
 
-  // The `status` can be 'loading', 'authenticated', or 'unauthenticated'
   if (status === "loading") {
     return (
       <div className="h-10 w-24 rounded-lg bg-gray-200 animate-pulse"></div>
@@ -15,13 +15,9 @@ export default function AuthButtons() {
   if (session) {
     return (
       <div className="flex items-center gap-4">
-        <p className="text-sky-600">Signed in as {session.user?.email}</p>
-        <button
-          onClick={() => signOut()}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-        >
-          Sign out
-        </button>
+        <p className="text-sky-600">Signed in as {session.user?.name}</p>
+
+        <SignOutButton />
       </div>
     );
   }

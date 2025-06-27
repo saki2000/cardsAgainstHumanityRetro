@@ -4,16 +4,28 @@ import CognitoProvider from "next-auth/providers/cognito";
 export const authOptions: NextAuthOptions = {
   providers: [
     CognitoProvider({
-      // The `clientId` and `clientSecret` are obtained from the Cognito User Pool App Client.
-      // The `issuer` is the URL of the Cognito User Pool.
-      // We pull these from the environment variables you set up in Step 1.
       clientId: process.env.COGNITO_CLIENT_ID!,
       clientSecret: process.env.COGNITO_CLIENT_SECRET!,
       issuer: process.env.COGNITO_ISSUER!,
     }),
   ],
-  // You can add custom pages if you want to style your own login page.
-  // pages: {
-  //   signIn: '/auth/signin',
-  // },
+  pages: {
+    signOut: `${process.env.COGNITO_ISSUER}/logout?client_id=${process.env.COGNITO_CLIENT_ID}&logout_uri=${process.env.NEXTAUTH_URL}`,
+  },
+  callbacks: {
+    async jwt({ token, profile }) {
+      if (profile) {
+        token.name = (profile as Record<string, unknown>)[
+          "cognito:username"
+        ] as string;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.name = token.name;
+      }
+      return session;
+    },
+  },
 };

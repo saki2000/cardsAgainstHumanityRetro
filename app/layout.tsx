@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { NextAuthProvider } from "./components/NextAuthProvider"; // Import the provider
+import { NextAuthProvider } from "./components/NextAuthProvider/NextAuthProvider";
+import Header from "./components/Header/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Retro Game",
+  title: "Retro Against Humanity",
   description: "Cognito Auth Demo",
 };
 
@@ -18,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* Wrap your children with the provider */}
-        <NextAuthProvider>{children}</NextAuthProvider>
+        <NextAuthProvider>
+          <Header />
+          {children}
+        </NextAuthProvider>
       </body>
     </html>
   );
