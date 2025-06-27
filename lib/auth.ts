@@ -9,7 +9,9 @@ export const authOptions: NextAuthOptions = {
       issuer: process.env.COGNITO_ISSUER!,
     }),
   ],
-
+  pages: {
+    signOut: `${process.env.COGNITO_ISSUER}/logout?client_id=${process.env.COGNITO_CLIENT_ID}&logout_uri=${process.env.NEXTAUTH_URL}`,
+  },
   callbacks: {
     async jwt({ token, profile }) {
       if (profile) {
