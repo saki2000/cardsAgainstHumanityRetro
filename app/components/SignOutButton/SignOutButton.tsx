@@ -11,10 +11,9 @@ import { Fragment, useState } from "react";
 import { signOut } from "next-auth/react";
 
 export default function SignOutButton() {
-  // 1. The modal is hidden by default.
   const [isOpen, setIsOpen] = useState(false);
 
-  const getLogooutUrl = () => {
+  const getLogOutUrl = () => {
     return `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/logout?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&logout_uri=${process.env.NEXT_PUBLIC_APP_URL}`;
   };
 
@@ -27,7 +26,7 @@ export default function SignOutButton() {
   }
 
   const handleSignOut = () => {
-    const cognitoUrl = getLogooutUrl();
+    const cognitoUrl = getLogOutUrl();
     signOut({ redirect: false }).then(() => {
       window.location.href = cognitoUrl;
     });
