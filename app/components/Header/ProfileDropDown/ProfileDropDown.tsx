@@ -1,7 +1,11 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useSession } from "next-auth/react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import { CogIcon, IdentificationIcon, UserIcon } from "@heroicons/react/24/solid";
+import {
+  CogIcon,
+  IdentificationIcon,
+  UserIcon,
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export default function ProfileDropDown() {
@@ -14,7 +18,6 @@ export default function ProfileDropDown() {
         {session ? session.user?.name || "User" : "Guest"}
         <ChevronDownIcon className="size-4 fill-white/60" />
       </MenuButton>
-
       <MenuItems
         transition
         anchor="bottom end"
