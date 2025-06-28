@@ -18,7 +18,8 @@ export default function SignOutButton() {
     setIsOpen(false);
   }
 
-  function openModal() {
+  function openModal(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
     setIsOpen(true);
   }
 

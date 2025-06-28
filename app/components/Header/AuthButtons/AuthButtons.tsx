@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signIn } from "next-auth/react";
+import ProfileDropDown from "../ProfileDropDown/ProfileDropDown";
 import SignOutButton from "../SignOutButton/SignOutButton";
 
 export default function AuthButtons() {
@@ -15,8 +16,7 @@ export default function AuthButtons() {
   if (session) {
     return (
       <div className="flex items-center gap-4">
-        <p className="text-sky-600">Signed in as {session.user?.name}</p>
-
+        <ProfileDropDown />
         <SignOutButton />
       </div>
     );
