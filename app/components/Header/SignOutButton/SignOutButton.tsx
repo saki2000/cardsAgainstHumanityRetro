@@ -32,13 +32,15 @@ export default function SignOutButton() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={openModal}
-        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-      >
-        Sign out
-      </button>
+      <div className="p-2">
+        <button
+          type="button"
+          onClick={openModal}
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+        >
+          Sign out
+        </button>
+      </div>
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={closeModal}>
           <TransitionChild
