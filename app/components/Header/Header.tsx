@@ -1,4 +1,4 @@
-import AuthButtons from "../AuthButtons/AuthButtons";
+import AuthButtons from "./AuthButtons/AuthButtons";
 import Link from "next/link";
 
 export default function Header() {

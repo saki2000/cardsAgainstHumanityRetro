@@ -29,3 +29,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+export const getLogOutUrl = () => {
+  return `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/logout?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&logout_uri=${process.env.NEXT_PUBLIC_APP_URL}`;
+};
