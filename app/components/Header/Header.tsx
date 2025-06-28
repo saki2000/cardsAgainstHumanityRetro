@@ -1,12 +1,21 @@
 import AuthButtons from "./AuthButtons/AuthButtons";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between p-4 bg-gray-800 text-white sticky top-0">
-      <Link href="/" className="text-xl font-bold">
-        Retro Against Humanity
+    <header className="flex items-center justify-between bg-gray-800 text-white sticky top-0">
+      <Link href="/" className="flex items-center">
+        <Image
+          src="/logo.png"
+          alt="Retro Against Humanity Logo"
+          width={96}
+          height={96}
+          className="rounded p-2"
+          priority
+        />
       </Link>
+      <p className="text-4xl font-bold">Retro Against Humanity</p>
       <AuthButtons />
     </header>
   );
