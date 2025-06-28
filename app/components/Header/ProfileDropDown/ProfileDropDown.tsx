@@ -18,7 +18,6 @@ export default function ProfileDropDown() {
         {session ? session.user?.name || "User" : "Guest"}
         <ChevronDownIcon className="size-4 fill-white/60" />
       </MenuButton>
-
       <MenuItems
         transition
         anchor="bottom end"
