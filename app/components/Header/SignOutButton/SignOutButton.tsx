@@ -9,19 +9,17 @@ import {
 } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { signOut } from "next-auth/react";
+import { getLogOutUrl } from "@/lib/auth";
 
 export default function SignOutButton() {
   const [isOpen, setIsOpen] = useState(false);
-
-  const getLogOutUrl = () => {
-    return `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/logout?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&logout_uri=${process.env.NEXT_PUBLIC_APP_URL}`;
-  };
 
   function closeModal() {
     setIsOpen(false);
   }
 
-  function openModal() {
+  function openModal(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
     setIsOpen(true);
   }
 
@@ -34,13 +32,15 @@ export default function SignOutButton() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={openModal}
-        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-      >
-        Sign out
-      </button>
+      <div className="p-2">
+        <button
+          type="button"
+          onClick={openModal}
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+        >
+          Sign out
+        </button>
+      </div>
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={closeModal}>
           <TransitionChild
