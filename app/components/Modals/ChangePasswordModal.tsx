@@ -157,7 +157,12 @@ export default function ChangePasswordModal() {
                     <button
                       type="submit"
                       disabled={!passwordsMatch || loading}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded
+          ${
+            loading
+              ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+          }`}
                     >
                       {loading ? "Changing..." : "Change Password"}
                     </button>
@@ -166,7 +171,12 @@ export default function ChangePasswordModal() {
                       onClick={closeModal}
                       type="button"
                       disabled={loading}
-                      className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                      className={`w-full  font-bold py-2 px-4 rounded
+                                ${
+                                  loading
+                                    ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                                    : "bg-red-500 hover:bg-red-700 text-white cursor-pointer"
+                                }`}
                     >
                       Cancel
                     </button>
