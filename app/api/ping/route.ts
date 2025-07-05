@@ -7,7 +7,7 @@ export async function GET() {
     );
     return new Response(response.data, { status: 200 });
   } catch (err) {
-    console.error("Ping failed:", err);
+    console.error("Error:", err);
     return new Response("Error contacting backend", { status: 500 });
   }
 }
