@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import SessionCreatedModal from "../../Modals/SessionCreatedModal";
 import { useSession } from "next-auth/react";
+import axios from "axios";
 
 //TODO: Replace with real
 type Temp = {
@@ -25,7 +26,6 @@ export default function StartNewSessionTile({
   const [sessionCode, setSessionCode] = useState("");
 
   const buildPayload = (): Temp | null => {
-    console.log("Session data:", session);
     if (!session || !session.user?.email || !session.user?.name) {
       toast.error("You must be logged in to start a session.", {
         position: "bottom-right",
@@ -51,26 +51,25 @@ export default function StartNewSessionTile({
     }
     setIsOpen(true);
     try {
-      const response = await fetch("/api/session/create", {
-        method: "POST",
+      const response = await axios.post("/api/session/create", payload, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-      setSessionCode(data);
+      setSessionCode(response.data); // Adjust if your backend returns { code: ... }
       toast.success("Session created!", {
         position: "bottom-right",
       });
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err: unknown) {
-      //TODO: change to Error type
-      toast.error("Failed to start session. Please try again.", {
-        position: "bottom-right",
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      // TODO: manage errors better once backend is ready
+      toast.error(
+        "Failed to start session. Please try again." +
+          (err.response?.data?.message ? ` ${err.response.data.message}` : ""),
+        { position: "bottom-right" },
+      );
+      console.error("Session creation error:", err);
     } finally {
       setlockButton(false);
     }
@@ -86,7 +85,7 @@ export default function StartNewSessionTile({
         <button
           onClick={handleStartSession}
           disabled={lockButton}
-          className={`px-4 py-2 rounded-lg transition font-semibold
+          className={`px-4 py-2 rounded-lg
           ${
             lockButton
               ? "bg-gray-400 text-gray-200 cursor-not-allowed"
