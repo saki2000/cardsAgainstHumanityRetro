@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest, context: any) {
   try {
     const { code } = context.params;
-    const url = `${process.env.API_URL}/session/check/${encodeURIComponent(
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/session/check/${encodeURIComponent(
       code,
     )}`;
 

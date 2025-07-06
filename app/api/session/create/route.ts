@@ -1,12 +1,14 @@
 import axios from "axios";
 
 export async function POST(request: Request) {
-  const apiUrl = process.env.API_URL;
-  console.log("API_URL:", apiUrl); // Debugging line to check the API_URL
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  console.log("NEXT_PUBLIC_API_URL:", apiUrl); // Debugging line to check the API_URL
 
   if (!apiUrl) {
     // This will give you a clear error in your server logs if the variable is missing.
-    console.error("FATAL: API_URL environment variable is not set.");
+    console.error(
+      "FATAL: NEXT_PUBLIC_API_URL environment variable is not set.",
+    );
     throw new Error("Server is not configured correctly.");
   } //TODO: Remove later if not needed
 
