@@ -1,6 +1,7 @@
 import ReturnButton from "../components/ReturnButton/ReturnButton";
 
 export default function ProfilePage() {
+  // TODO: make this page dynamic, fetching user data from the server (maybe using email?)
   const atributes = ["Name", "Email", "Best Score", "Games Played"];
 
   return (
