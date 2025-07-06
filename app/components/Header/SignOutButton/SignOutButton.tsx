@@ -9,7 +9,7 @@ import {
 } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { signOut } from "next-auth/react";
-import { getLogOutUrl } from "@/lib/auth";
+import { getLogOutUrl } from "@/lib/clientUtils";
 
 export default function SignOutButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,7 +79,7 @@ export default function SignOutButton() {
                     </p>
                   </div>
 
-                  <div className="mt-4 flex justify-end gap-4">
+                  <div className="mt-4 flex justify-end gap-8">
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-500"

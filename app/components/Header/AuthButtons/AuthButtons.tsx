@@ -22,7 +22,7 @@ export default function AuthButtons() {
     );
   }
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 mr-4">
       <p>Not signed in</p>
       <button
         onClick={() => signIn("cognito")}
