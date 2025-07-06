@@ -1,17 +1,27 @@
 import axios from "axios";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { code: string } },
-) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function GET(request: NextRequest, context: any) {
   try {
-    const { code } = params;
-    const url = `${process.env.API_URL}/session/check/${encodeURIComponent(code)}`;
+    const { code } = context.params;
+    const url = `${process.env.API_URL}/session/check/${encodeURIComponent(
+      code,
+    )}`;
 
     const response = await axios.get(url);
-    return new Response(JSON.stringify(response.data), { status: 200 });
-  } catch (err) {
-    console.error("Error:", err);
-    return new Response("Error contacting backend", { status: 500 });
+    debugger;
+    console.log("Session check response:", response);
+    return NextResponse.json(response.data);
+  } catch (err: unknown) {
+    debugger;
+    console.error("Error checking session:", err);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const status = (err as any)?.response?.status || 500;
+    return NextResponse.json(
+      //TODO: manage errors better when got types
+      { message: "Error contacting backend" },
+      { status },
+    );
   }
 }

@@ -13,22 +13,37 @@ type Props = {
 export default function JoinSessionTile({ lockButton, setlockButton }: Props) {
   const router = useRouter();
   const [sessionCode, setSessionCode] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleJoinSession = async () => {
     setlockButton(true);
+    setErrorMessage("");
+
     const trimmedCode = sessionCode.trim();
-    if (!trimmedCode) {
+    const valid = /^[a-zA-Z0-9]{6}$/.test(trimmedCode);
+
+    if (!valid) {
       setlockButton(false);
+      setErrorMessage("Invalid code provided.");
       return;
     }
+
     try {
       await axios.get(`/api/session/check/${trimmedCode}`);
       router.push(`/Session/${trimmedCode}`);
     } catch (err: unknown) {
-      const errorMsg = "Can't join session.";
-
-      //TODO: manage errors better once backend is ready
-      toast.error(errorMsg, { position: "bottom-right" });
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 404) {
+          toast.error("Session not found. Please check the code.", {
+            position: "bottom-right",
+          });
+          setErrorMessage("Session not found.");
+        } else {
+          setErrorMessage("Can't join session. Please try again.");
+        }
+      } else {
+        setErrorMessage("An unexpected error occurred.");
+      }
       console.error("Join session error:", err);
     } finally {
       setlockButton(false);
@@ -48,6 +63,7 @@ export default function JoinSessionTile({ lockButton, setlockButton }: Props) {
         onChange={(e) => setSessionCode(e.target.value)}
         className="border border-gray-300 rounded-lg p-2 mb-4 w-64 bg-white text-black"
       />
+      <p className="text-red-500">{errorMessage} </p>
       <button
         className={`px-4 py-2 rounded-lg          ${
           lockButton
