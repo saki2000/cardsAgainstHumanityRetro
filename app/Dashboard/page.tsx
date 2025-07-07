@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import JoinSessionTile from "../components/Tiles/JoinSessionTile/JoinSessionTile";
-import StartNewSessionTile from "../components/Tiles/StartNewSessionTile/StartNewSessionTile";
+import JoinSessionTile from "../components/DashboardPage/Tiles/JoinSessionTile/JoinSessionTile";
+import StartNewSessionTile from "../components/DashboardPage/Tiles/StartNewSessionTile/StartNewSessionTile";
 
 export default function DashboardPage() {
   const [lockButton, setlockButton] = useState(false);

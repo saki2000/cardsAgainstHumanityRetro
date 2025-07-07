@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-toastify";
-import SessionCreatedModal from "../../Modals/SessionCreatedModal";
+import SessionCreatedModal from "../../../HomePage/SessionCreatedModal/SessionCreatedModal";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 
