@@ -76,31 +76,29 @@ export default function StartNewSessionTile({
   };
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-center h-full border border-gray-200 rounded-lg shadow-lg p-6 bg-white">
-        <h2 className="text-2xl font-bold mb-4 text-black">
-          Start a New Session
-        </h2>
-        <p className="mb-6 text-black">Create a new game session to play.</p>
-        <button
-          onClick={handleStartSession}
-          disabled={lockButton}
-          className={`px-4 py-2 rounded-lg
+    <div className="tile border border-gray-200 bg-white">
+      <h2 className="text-2xl font-bold mb-4 text-black">
+        Start a New Session
+      </h2>
+      <p className="mb-6 text-black">Create a new game session to play.</p>
+      <button
+        onClick={handleStartSession}
+        disabled={lockButton}
+        className={`px-4 py-2 rounded-lg
           ${
             lockButton
               ? "bg-gray-400 text-gray-200 cursor-not-allowed"
               : "btn-primary"
           }`}
-        >
-          Start New Game
-        </button>
-        <SessionCreatedModal
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          sessionCode={sessionCode}
-          setSessionCode={setSessionCode}
-        />
-      </div>
-    </>
+      >
+        Start New Game
+      </button>
+      <SessionCreatedModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        sessionCode={sessionCode}
+        setSessionCode={setSessionCode}
+      />
+    </div>
   );
 }

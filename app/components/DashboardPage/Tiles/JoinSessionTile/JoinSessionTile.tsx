@@ -51,7 +51,7 @@ export default function JoinSessionTile({ lockButton, setlockButton }: Props) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full border-2 px-2 py-3 border-white rounded-lg shadow-lg">
+    <div className="tile border-2 border-white">
       <h2 className="text-2xl font-bold mb-4">Join a Session</h2>
       <p className="mb-6">Enter the session code to join an existing game.</p>
 
