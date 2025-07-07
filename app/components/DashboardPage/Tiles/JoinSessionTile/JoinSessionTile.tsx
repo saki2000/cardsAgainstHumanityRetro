@@ -68,7 +68,7 @@ export default function JoinSessionTile({ lockButton, setlockButton }: Props) {
         className={`px-4 py-2 rounded-lg          ${
           lockButton
             ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-            : "bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+            : "btn-primary"
         }`}
         onClick={handleJoinSession}
         disabled={lockButton}

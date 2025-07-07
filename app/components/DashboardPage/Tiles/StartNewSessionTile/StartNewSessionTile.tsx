@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-toastify";
-import SessionCreatedModal from "../../../HomePage/SessionCreatedModal/SessionCreatedModal";
+import SessionCreatedModal from "../../SessionCreatedModal/SessionCreatedModal";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 
@@ -89,7 +89,7 @@ export default function StartNewSessionTile({
           ${
             lockButton
               ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+              : "btn-primary"
           }`}
         >
           Start New Game

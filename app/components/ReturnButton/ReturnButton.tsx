@@ -6,7 +6,7 @@ export default function ReturnButton() {
   return (
     <button
       onClick={() => window.history.back()}
-      className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
+      className="btn-primary flex items-center gap-2 text-lg"
       aria-label="Go back"
     >
       <ArrowLeftCircleIcon className="w-6 h-6" />
