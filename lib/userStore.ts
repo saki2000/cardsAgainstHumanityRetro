@@ -44,6 +44,8 @@ export const useUserStore = create<UserState>((set, get) => ({
     const socket = get().socket;
     if (socket) {
       socket.emit("leave_session", payload);
+      socket.disconnect();
+      set({ socket: null });
     }
   },
 }));

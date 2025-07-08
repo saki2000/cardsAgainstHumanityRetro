@@ -1,6 +1,8 @@
 "use client";
 
+import { useUserStore } from "@/lib/userStore";
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/solid";
+import { useEffect, useState } from "react";
 
 interface SessionCodeBannerProps {
   sessionCode: string;
@@ -9,6 +11,30 @@ interface SessionCodeBannerProps {
 export default function SessionCodeBanner({
   sessionCode,
 }: SessionCodeBannerProps) {
+  const [message, setMessage] = useState<string | null>(null);
+  const socket = useUserStore((state) => state.socket);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("player_joined", (username: string) => {
+        setMessage(`${username} has joined the session.`);
+      });
+
+      socket.on("player_left", (username: string) => {
+        console.log("Player left event received:", username);
+        setMessage(`${username} has left the session.`);
+      });
+
+      const timeout = setTimeout(() => setMessage(null), 1000);
+
+      return () => {
+        clearTimeout(timeout);
+        socket.off("player_joined");
+        socket.off("player_left");
+      };
+    }
+  }, [socket]);
+
   const handleLeaveSession = () => {
     window.location.href = "/Dashboard";
   };
@@ -21,7 +47,15 @@ export default function SessionCodeBanner({
           {sessionCode}
         </p>
       </div>
-
+      {message && (
+        <p
+          className={`text-sm ${
+            message.includes("joined") ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {message}
+        </p>
+      )}
       <button
         className="btn-cancel flex items-center gap-2"
         onClick={handleLeaveSession}
