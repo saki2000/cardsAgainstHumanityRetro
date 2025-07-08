@@ -28,7 +28,7 @@ export default function GameRoom({ sessionCode }: Props) {
   }, [session, sessionCode, connectSocket, joinSession]);
 
   return (
-    <div className="h-screen border-4 border-white m-2">
+    <div className="h-screen border-4 border-white m-2 rounded-lg shadow-lg">
       <PlayerList />
     </div>
   );

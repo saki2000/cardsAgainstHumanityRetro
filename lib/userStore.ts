@@ -13,6 +13,7 @@ interface UserState {
   setPlayers: (players: Player[]) => void;
   connectSocket: () => void;
   joinSession: (payload: Player) => void;
+  leaveSession: (payload: Player) => void;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -36,6 +37,13 @@ export const useUserStore = create<UserState>((set, get) => ({
     const socket = get().socket;
     if (socket) {
       socket.emit("join_session", payload);
+    }
+  },
+
+  leaveSession: (payload) => {
+    const socket = get().socket;
+    if (socket) {
+      socket.emit("leave_session", payload);
     }
   },
 }));
