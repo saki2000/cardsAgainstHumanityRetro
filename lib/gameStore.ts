@@ -1,22 +1,66 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from "zustand";
-import type { Socket as SocketType } from "socket.io-client";
+import io from "socket.io-client";
 
-interface Player {
-  id: string;
-  name: string;
-  email: string; //TODO: UNSURE IF NEEDED
+interface JoinSessionPayload {
+  username: string;
+  email: string;
+  sessionCode: string;
 }
 
-type GameState = {
+interface LeaveSessionPayload {
+  username: string;
+  sessionCode: string;
+}
+
+interface Player {
+  id: number;
+  username: string;
+}
+
+interface GameState {
+  sessionCode: string;
+  hostId: number;
   players: Player[];
-};
+}
 
-type GameActions = {
-  updateGameState: (newState: Partial<GameState>) => void;
-};
+interface UserState {
+  players: Player[];
+  hostId: number | null;
+  socket: SocketIOClient.Socket | null;
+  connectSocket: () => void;
+  joinSession: (payload: JoinSessionPayload) => void;
+  leaveSession: (payload: LeaveSessionPayload) => void;
+}
 
-export const useGameStore = create<GameState & GameActions>((set) => ({
+export const useGameStore = create<UserState>((set, get) => ({
   players: [],
-  updateGameState: (newState) => set((state) => ({ ...state, ...newState })),
+  hostId: null,
+  socket: null,
+
+  connectSocket: () => {
+    if (get().socket) return;
+    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
+
+    socket.on("game_state_update", (gameState: GameState) => {
+      set({ players: gameState.players, hostId: gameState.hostId });
+    });
+
+    set({ socket });
+  },
+
+  joinSession: (payload) => {
+    get().socket?.emit("join_session", payload);
+  },
+
+  leaveSession: (payload) => {
+    const socket = get().socket;
+    if (socket) {
+      socket.emit("leave_session", {
+        sessionCode: payload.sessionCode,
+        username: payload.username,
+      });
+      socket.disconnect();
+      set({ socket: null, players: [], hostId: null });
+    }
+  },
 }));

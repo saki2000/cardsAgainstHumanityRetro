@@ -1,9 +1,9 @@
 "use client";
 
-import { useUserStore } from "@/lib/userStore";
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
+import { useGameStore } from "@/lib/gameStore";
 
 interface SessionCodeBannerProps {
   sessionCode: string;
@@ -16,7 +16,7 @@ export default function SessionCodeBanner({
   const [message, setMessage] = useState<{ text: string; type: string } | null>(
     null,
   );
-  const socket = useUserStore((state) => state.socket);
+  const socket = useGameStore((state) => state.socket);
 
   const messageStyles: Record<string, string> = {
     joined: "text-green-500",

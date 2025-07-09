@@ -1,9 +1,9 @@
 "use client";
 
-import { useUserStore } from "@/lib/userStore";
+import { useGameStore } from "@/lib/gameStore";
 
 export default function PlayerList() {
-  const players = useUserStore((state) => state.players);
+  const players = useGameStore((state) => state.players);
 
   return (
     <aside className="w-48 bg-white/50 p-4 rounded-lg shadow-md m-2">

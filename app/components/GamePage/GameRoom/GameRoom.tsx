@@ -2,17 +2,17 @@
 
 import { useEffect } from "react";
 import PlayerList from "../PlayerList/PlayerList";
-import { useUserStore } from "@/lib/userStore";
 import { useSession } from "next-auth/react";
 import HostControls from "../HostControls/HostControls";
+import { useGameStore } from "@/lib/gameStore";
 
 interface Props {
   sessionCode: string;
 }
 
 export default function GameRoom({ sessionCode }: Props) {
-  const connectSocket = useUserStore((state) => state.connectSocket);
-  const joinSession = useUserStore((state) => state.joinSession);
+  const connectSocket = useGameStore((state) => state.connectSocket);
+  const joinSession = useGameStore((state) => state.joinSession);
 
   const { data: session } = useSession();
 
