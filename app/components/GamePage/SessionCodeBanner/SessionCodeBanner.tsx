@@ -9,47 +9,56 @@ interface SessionCodeBannerProps {
   sessionCode: string;
 }
 
+interface Message {
+  id: number;
+  text: string;
+  type: "join" | "leave" | "host";
+}
+
+// Style mapping for different message types
+const messageStyles = {
+  join: "text-green-400",
+  leave: "text-red-400",
+  host: "text-blue-400",
+};
+
 export default function SessionCodeBanner({
   sessionCode,
 }: SessionCodeBannerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState<{ text: string; type: string } | null>(
-    null,
-  );
+  const [messages, setMessages] = useState<Message[]>([]);
+
   const socket = useGameStore((state) => state.socket);
 
-  const messageStyles: Record<string, string> = {
-    joined: "text-green-500",
-    left: "text-red-500",
-    newHost: "text-blue-500",
-  };
-
   useEffect(() => {
-    if (socket) {
-      socket.on("player_joined", (username: string) => {
-        setMessage({
-          text: `${username} has joined the session.`,
-          type: "joined",
-        });
+    if (!socket) return;
 
-        setTimeout(() => {
-          setMessage(null);
-        }, 1000);
-      });
+    // Helper function to add a message and schedule its removal
+    const addMessage = (text: string, type: Message["type"]) => {
+      const newMessage = { id: Date.now(), text, type };
+      setMessages((prev) => [...prev, newMessage]);
+      setTimeout(() => {
+        setMessages((current) => current.filter((m) => m.id !== newMessage.id));
+      }, 3000); // Message disappears after 3 seconds
+    };
 
-      socket.on("player_left", (username: string) => {
-        setMessage({ text: `${username} has left the session.`, type: "left" });
+    const handlePlayerJoined = (username: string) =>
+      addMessage(`${username} has joined the session`, "join");
+    const handlePlayerLeft = (username: string) =>
+      addMessage(`${username} has left the session`, "leave");
+    const handleHostChange = (username: string) =>
+      addMessage(`${username} is now the host`, "host");
 
-        setTimeout(() => {
-          setMessage(null);
-        }, 1000);
-      });
+    socket.on("player_joined", handlePlayerJoined);
+    socket.on("player_left", handlePlayerLeft);
+    socket.on("host_change", handleHostChange);
 
-      return () => {
-        socket.off("player_joined");
-        socket.off("player_left");
-      };
-    }
+    // Cleanup listeners on component unmount
+    return () => {
+      socket.off("player_joined", handlePlayerJoined);
+      socket.off("player_left", handlePlayerLeft);
+      socket.off("host_change", handleHostChange);
+    };
   }, [socket]);
 
   const leaveSession = () => {
@@ -72,11 +81,18 @@ export default function SessionCodeBanner({
           {sessionCode}
         </p>
       </div>
-      {message && (
-        <p className={`text-sm ${messageStyles[message.type]}`}>
-          {message.text}
-        </p>
-      )}
+
+      <div className="flex flex-col items-center">
+        {messages.map((msg) => (
+          <p
+            key={msg.id}
+            className={`text-sm font-semibold ${messageStyles[msg.type]}`}
+          >
+            {msg.text}
+          </p>
+        ))}
+      </div>
+
       <button
         className="btn-cancel flex items-center gap-2"
         onClick={handleLeaveSession}
