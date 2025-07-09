@@ -3,6 +3,7 @@
 import { useUserStore } from "@/lib/userStore";
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
+import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
 
 interface SessionCodeBannerProps {
   sessionCode: string;
@@ -11,6 +12,7 @@ interface SessionCodeBannerProps {
 export default function SessionCodeBanner({
   sessionCode,
 }: SessionCodeBannerProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: string } | null>(
     null,
   );
@@ -50,8 +52,16 @@ export default function SessionCodeBanner({
     }
   }, [socket]);
 
-  const handleLeaveSession = () => {
+  const leaveSession = () => {
     window.location.href = "/Dashboard";
+  };
+
+  const handleLeaveSession = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -74,6 +84,16 @@ export default function SessionCodeBanner({
         <ArrowLeftOnRectangleIcon className="h-8 w-8" />
         <span>Leave</span>
       </button>
+      <ConfirmationModal
+        isOpen={isOpen}
+        closeModal={() => {}}
+        onConfirm={leaveSession}
+        onCancel={closeModal}
+        title="Confirm Leave"
+        message="Are you sure you want to leave the session?"
+        okText="Leave"
+        cancelText="Cancel"
+      />
     </div>
   );
 }
