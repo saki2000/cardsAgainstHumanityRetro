@@ -1,51 +1,66 @@
 import { create } from "zustand";
 import io from "socket.io-client";
 
-interface Player {
+interface JoinSessionPayload {
   username: string;
   email: string;
   sessionCode: string;
 }
 
+interface LeaveSessionPayload {
+  username: string;
+  sessionCode: string;
+}
+
+interface Player {
+  id: number;
+  username: string;
+}
+
+interface GameState {
+  sessionCode: string;
+  hostId: number;
+  players: Player[];
+}
+
 interface UserState {
   players: Player[];
+  hostId: number | null;
   socket: SocketIOClient.Socket | null;
-  setPlayers: (players: Player[]) => void;
   connectSocket: () => void;
-  joinSession: (payload: Player) => void;
-  leaveSession: (payload: Player) => void;
+  joinSession: (payload: JoinSessionPayload) => void;
+  leaveSession: (payload: LeaveSessionPayload) => void;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
   players: [],
+  hostId: null,
   socket: null,
-
-  setPlayers: (players) => set({ players }),
 
   connectSocket: () => {
     if (get().socket) return;
     const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
 
-    socket.on("update_user_list", (players: Player[]) => {
-      set({ players });
+    socket.on("game_state_update", (gameState: GameState) => {
+      set({ players: gameState.players, hostId: gameState.hostId });
     });
 
     set({ socket });
   },
 
   joinSession: (payload) => {
-    const socket = get().socket;
-    if (socket) {
-      socket.emit("join_session", payload);
-    }
+    get().socket?.emit("join_session", payload);
   },
 
   leaveSession: (payload) => {
     const socket = get().socket;
     if (socket) {
-      socket.emit("leave_session", payload);
+      socket.emit("leave_session", {
+        sessionCode: payload.sessionCode,
+        username: payload.username,
+      });
       socket.disconnect();
-      set({ socket: null });
+      set({ socket: null, players: [], hostId: null });
     }
   },
 }));
