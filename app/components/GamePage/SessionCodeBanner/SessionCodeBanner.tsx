@@ -93,6 +93,7 @@ export default function SessionCodeBanner({
         message="Are you sure you want to leave the session?"
         okText="Leave"
         cancelText="Cancel"
+        isWarning={true}
       />
     </div>
   );

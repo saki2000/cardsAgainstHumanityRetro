@@ -16,6 +16,7 @@ interface ConfirmationModalProps {
   message?: string;
   okText?: string;
   cancelText?: string;
+  isWarning?: boolean;
 }
 
 export default function ConfirmationModal({
@@ -27,6 +28,7 @@ export default function ConfirmationModal({
   message,
   okText,
   cancelText,
+  isWarning = false,
 }: ConfirmationModalProps) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -75,7 +77,7 @@ export default function ConfirmationModal({
                   </button>
                   <button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500"
+                    className={isWarning ? "btn-cancel" : "btn-primary"}
                     onClick={onConfirm}
                   >
                     {okText}

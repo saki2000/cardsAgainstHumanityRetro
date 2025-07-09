@@ -33,7 +33,7 @@ export default function GameRoom({ sessionCode }: Props) {
       <div className="h-screen border-4 border-white m-2 rounded-lg shadow-lg">
         <PlayerList />
       </div>
-      <footer className="fixed bottom-4 left-1/2 -translate-x-1/2 w-1/2 bg-gray-600 p-4 rounded-lg border-white border-2 shadow-lg">
+      <footer className="fixed bottom-2 left-1/2 -translate-x-1/2 w-1/2 bg-gray-600 rounded-lg border-white border-2 shadow-lg">
         <HostControls />
       </footer>
     </>

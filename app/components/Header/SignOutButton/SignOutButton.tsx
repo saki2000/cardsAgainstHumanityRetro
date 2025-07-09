@@ -40,6 +40,7 @@ export default function SignOutButton() {
         message="Are you sure you want to sign out?"
         okText="Sign Out"
         cancelText="Cancel"
+        isWarning={true}
       />
     </>
   );
