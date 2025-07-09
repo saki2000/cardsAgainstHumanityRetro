@@ -11,24 +11,39 @@ interface SessionCodeBannerProps {
 export default function SessionCodeBanner({
   sessionCode,
 }: SessionCodeBannerProps) {
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; type: string } | null>(
+    null,
+  );
   const socket = useUserStore((state) => state.socket);
+
+  const messageStyles: Record<string, string> = {
+    joined: "text-green-500",
+    left: "text-red-500",
+    newHost: "text-blue-500",
+  };
 
   useEffect(() => {
     if (socket) {
       socket.on("player_joined", (username: string) => {
-        setMessage(`${username} has joined the session.`);
+        setMessage({
+          text: `${username} has joined the session.`,
+          type: "joined",
+        });
+
+        setTimeout(() => {
+          setMessage(null);
+        }, 1000);
       });
 
       socket.on("player_left", (username: string) => {
-        console.log("Player left event received:", username);
-        setMessage(`${username} has left the session.`);
+        setMessage({ text: `${username} has left the session.`, type: "left" });
+
+        setTimeout(() => {
+          setMessage(null);
+        }, 1000);
       });
 
-      const timeout = setTimeout(() => setMessage(null), 1000);
-
       return () => {
-        clearTimeout(timeout);
         socket.off("player_joined");
         socket.off("player_left");
       };
@@ -48,12 +63,8 @@ export default function SessionCodeBanner({
         </p>
       </div>
       {message && (
-        <p
-          className={`text-sm ${
-            message.includes("joined") ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {message}
+        <p className={`text-sm ${messageStyles[message.type]}`}>
+          {message.text}
         </p>
       )}
       <button
