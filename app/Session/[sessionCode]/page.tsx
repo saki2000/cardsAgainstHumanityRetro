@@ -1,4 +1,5 @@
 import GameRoom from "@/app/components/GamePage/GameRoom/GameRoom";
+import HostControls from "@/app/components/GamePage/HostControls/HostControls";
 import SessionCodeBanner from "@/app/components/GamePage/SessionCodeBanner/SessionCodeBanner";
 import { checkSessionExists } from "@/lib/checkSession";
 import { notFound } from "next/navigation";
@@ -21,9 +22,12 @@ export default async function SessionPage(props: Props) {
     notFound();
   }
   return (
-    <div className="items-center justify-center text-white">
+    <div className="min-h-screen flex flex-col bg-black">
       <SessionCodeBanner sessionCode={sessionCode} />
-      <GameRoom sessionCode={sessionCode} />
+      <div className="flex-1 flex flex-col">
+        <GameRoom sessionCode={sessionCode} />
+      </div>
+      <HostControls />
     </div>
   );
 }

@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 import PlayerList from "../PlayerList/PlayerList";
 import { useSession } from "next-auth/react";
-import HostControls from "../HostControls/HostControls";
 import { useGameStore } from "@/lib/gameStore";
+import Loading from "@/app/loading";
 
 interface Props {
   sessionCode: string;
@@ -13,28 +13,42 @@ interface Props {
 export default function GameRoom({ sessionCode }: Props) {
   const connectSocket = useGameStore((state) => state.connectSocket);
   const joinSession = useGameStore((state) => state.joinSession);
+  const disconnectAndCleanup = useGameStore(
+    (state) => state.disconnectAndCleanup,
+  );
+  const socket = useGameStore((state) => state.socket);
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    connectSocket();
+    if (status === "authenticated") {
+      connectSocket();
+    }
+  }, [status, connectSocket]);
 
-    if (session?.user?.name && session.user?.email) {
+  useEffect(() => {
+    if (socket && session?.user?.name && session.user?.email) {
       joinSession({
         username: session.user.name,
         email: session.user.email,
         sessionCode: sessionCode,
       });
     }
-  }, [session, sessionCode, connectSocket, joinSession]);
+  }, [socket, session, sessionCode, joinSession]);
+
+  useEffect(() => {
+    return () => {
+      disconnectAndCleanup();
+    };
+  }, [disconnectAndCleanup]);
+
+  if (status === "loading") {
+    return <Loading />;
+  }
 
   return (
-    <>
-      <div className="h-screen border-4 border-white m-2 rounded-lg shadow-lg">
-        <PlayerList />
-      </div>
-
-      <HostControls />
-    </>
+    <div className="flex-1 border-4 border-white rounded-lg shadow-lg bg-black m-2">
+      <PlayerList />
+    </div>
   );
 }

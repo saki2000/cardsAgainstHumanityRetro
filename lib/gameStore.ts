@@ -29,7 +29,8 @@ interface UserState {
   socket: SocketIOClient.Socket | null;
   connectSocket: () => void;
   joinSession: (payload: JoinSessionPayload) => void;
-  leaveSession: (payload: LeaveSessionPayload) => void;
+  emitLeaveSession: (payload: LeaveSessionPayload) => void;
+  disconnectAndCleanup: () => void;
 }
 
 export const useGameStore = create<UserState>((set, get) => ({
@@ -52,13 +53,13 @@ export const useGameStore = create<UserState>((set, get) => ({
     get().socket?.emit("join_session", payload);
   },
 
-  leaveSession: (payload) => {
+  emitLeaveSession: (payload) => {
+    get().socket?.emit("leave_session", payload);
+  },
+
+  disconnectAndCleanup: () => {
     const socket = get().socket;
     if (socket) {
-      socket.emit("leave_session", {
-        sessionCode: payload.sessionCode,
-        username: payload.username,
-      });
       socket.disconnect();
       set({ socket: null, players: [], hostId: null });
     }
