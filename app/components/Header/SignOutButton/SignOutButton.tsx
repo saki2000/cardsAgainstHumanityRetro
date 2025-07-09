@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { getLogOutUrl } from "@/lib/clientUtils";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
