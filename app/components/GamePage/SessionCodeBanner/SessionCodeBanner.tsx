@@ -15,7 +15,6 @@ interface Message {
   type: "join" | "leave" | "host";
 }
 
-// Style mapping for different message types
 const messageStyles = {
   join: "text-green-400",
   leave: "text-red-400",
@@ -33,13 +32,12 @@ export default function SessionCodeBanner({
   useEffect(() => {
     if (!socket) return;
 
-    // Helper function to add a message and schedule its removal
     const addMessage = (text: string, type: Message["type"]) => {
       const newMessage = { id: Date.now(), text, type };
       setMessages((prev) => [...prev, newMessage]);
       setTimeout(() => {
         setMessages((current) => current.filter((m) => m.id !== newMessage.id));
-      }, 3000); // Message disappears after 3 seconds
+      }, 3000);
     };
 
     const handlePlayerJoined = (username: string) =>
@@ -53,7 +51,6 @@ export default function SessionCodeBanner({
     socket.on("player_left", handlePlayerLeft);
     socket.on("host_change", handleHostChange);
 
-    // Cleanup listeners on component unmount
     return () => {
       socket.off("player_joined", handlePlayerJoined);
       socket.off("player_left", handlePlayerLeft);
