@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import PlayerList from "../PlayerList/PlayerList";
 import { useSession } from "next-auth/react";
 import { useGameStore } from "@/lib/gameStore";
@@ -17,6 +17,7 @@ export default function GameRoom({ sessionCode }: Props) {
     (state) => state.disconnectAndCleanup,
   );
   const socket = useGameStore((state) => state.socket);
+  const hasJoined = useRef(false);
 
   const { data: session, status } = useSession();
 
@@ -27,12 +28,18 @@ export default function GameRoom({ sessionCode }: Props) {
   }, [status, connectSocket]);
 
   useEffect(() => {
-    if (socket && session?.user?.name && session.user?.email) {
+    if (
+      socket &&
+      session?.user?.name &&
+      session.user?.email &&
+      !hasJoined.current
+    ) {
       joinSession({
         username: session.user.name,
         email: session.user.email,
         sessionCode: sessionCode,
       });
+      hasJoined.current = true;
     }
   }, [socket, session, sessionCode, joinSession]);
 

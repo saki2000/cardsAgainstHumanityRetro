@@ -10,7 +10,6 @@ export default function HostControls() {
   const [isFirstRound, setIsFirstRound] = useState(true);
 
   // const hostId = useGameStore((state) => state.hostId);
-  // const currentUser = useGameStore((state) => state.currentUser);
 
   // const isHost = currentUser && hostId && currentUser.id === hostId;
 
