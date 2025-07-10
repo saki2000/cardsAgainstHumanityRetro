@@ -18,7 +18,8 @@ interface GameState {
   cardHolderId: number | null;
   currentUser?: { username: string; email: string };
   socket: SocketIOClient.Socket | null;
-  isFirstRound?: boolean;
+  isFirstRound: boolean;
+  sessionEnded: boolean;
 }
 
 interface GameActions {
@@ -31,14 +32,17 @@ interface GameActions {
   getCardHolder: () => Player | undefined;
   getHostNameById: (id: number) => string | null;
   setFirstRound: (isFirstRound: boolean) => void;
+  endSession: (sessionCode: string) => void;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
+  sessionCode: null,
   players: [],
   hostId: null,
   cardHolderId: null,
   socket: null,
   isFirstRound: true,
+  sessionEnded: false,
 
   connectSocket: () => {
     if (get().socket) return;
@@ -61,6 +65,10 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       });
     });
 
+    socket.on("session_ended", () => {
+      set({ sessionEnded: true });
+    });
+
     set({ socket });
   },
 
@@ -72,6 +80,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       return;
     }
     socket.emit("join_session", payload);
+  },
+
+  endSession: (sessionCode: string) => {
+    const socket = get().socket;
+    if (socket) {
+      socket.emit("end_session", { sessionCode });
+    }
   },
 
   disconnectAndCleanup: () => {

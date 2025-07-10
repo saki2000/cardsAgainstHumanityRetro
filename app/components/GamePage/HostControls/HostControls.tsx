@@ -4,27 +4,30 @@ import { useState } from "react";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
 import { useGameStore } from "@/lib/gameStore";
 
-export default function HostControls() {
+interface Props {
+  sessionCode: string;
+}
+
+export default function HostControls({ sessionCode }: Props) {
   const [isEndGameModalOpen, setIsEndGameModalOpen] = useState(false);
   const [isStartRoundModalOpen, setIsStartRoundModalOpen] = useState(false);
-  const [isFirstRound, setIsFirstRound] = useState(true);
 
   const isHost = useGameStore((state) => state.isCurrentUserHost());
+  const isFirstRound = useGameStore((state) => state.isFirstRound);
+  const setIsFirstRound = useGameStore((state) => state.setFirstRound);
+  const endSession = useGameStore((state) => state.endSession);
 
   if (!isHost) {
     return null;
   }
 
   const handleConfirmEnd = () => {
-    console.log("Session ended");
-    // TODO: Implement session end logic
+    endSession(sessionCode);
     setIsEndGameModalOpen(false);
   };
 
   const handleConfirmStart = () => {
-    //TODO: Implement session start logic
     if (isFirstRound) {
-      console.log("Game started");
       setIsFirstRound(false);
     } else {
       console.log("Next round started");
@@ -33,7 +36,7 @@ export default function HostControls() {
   };
 
   return (
-    <footer className="fixed bottom-2 left-1/2 -translate-x-1/2 w-1/2 bg-gray-600 rounded-lg border-white border-2 shadow-lg">
+    <footer className="fixed bottom-4 left-1/2 -translate-x-1/2 w-1/2 bg-gray-600 rounded-lg border-white border-2 shadow-lg">
       <div className="flex items-center justify-between m-4">
         <button
           className="btn-primary"

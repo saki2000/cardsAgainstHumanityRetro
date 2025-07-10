@@ -11,6 +11,7 @@ interface Props {
 
 export default async function SessionPage(props: Props) {
   const { sessionCode } = await props.params;
+
   try {
     const sessionData = await checkSessionExists(sessionCode);
 
@@ -27,7 +28,7 @@ export default async function SessionPage(props: Props) {
       <div className="flex-1 flex flex-col">
         <GameRoom sessionCode={sessionCode} />
       </div>
-      <HostControls />
+      <HostControls sessionCode={sessionCode} />
     </div>
   );
 }
