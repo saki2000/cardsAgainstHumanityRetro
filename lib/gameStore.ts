@@ -12,6 +12,13 @@ interface Player {
   username: string;
 }
 
+type MessageCallback = (msg: {
+  text: string;
+  type: "join" | "leave" | "host";
+}) => void;
+
+let messageListeners: MessageCallback[] = [];
+
 interface GameState {
   players: Player[];
   hostId: number | null;
@@ -33,6 +40,10 @@ interface GameActions {
   getHostNameById: (id: number) => string | null;
   setFirstRound: (isFirstRound: boolean) => void;
   endSession: (sessionCode: string) => void;
+  _emitMessage: (msg: {
+    text: string;
+    type: "join" | "leave" | "host";
+  }) => void;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -44,9 +55,40 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   isFirstRound: true,
   sessionEnded: false,
 
+  subscribeToMessages: (cb: MessageCallback) => {
+    messageListeners.push(cb);
+    return () => {
+      messageListeners = messageListeners.filter((fn) => fn !== cb);
+    };
+  },
+
+  // Internal: call this to notify all listeners
+  _emitMessage: (msg: { text: string; type: "join" | "leave" | "host" }) => {
+    messageListeners.forEach((cb) => cb(msg));
+  },
+
   connectSocket: () => {
     if (get().socket) return;
     const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
+
+    socket.on("player_joined", (username: string) => {
+      get()._emitMessage({
+        text: `${username} has joined the session`,
+        type: "join",
+      });
+    });
+
+    socket.on("player_left", (username: string) => {
+      get()._emitMessage({
+        text: `${username} has left the session`,
+        type: "leave",
+      });
+    });
+
+    socket.on("host_change", (hostId: number) => {
+      const hostName = get().getHostNameById(hostId);
+      get()._emitMessage({ text: `${hostName} is now the host`, type: "host" });
+    });
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);

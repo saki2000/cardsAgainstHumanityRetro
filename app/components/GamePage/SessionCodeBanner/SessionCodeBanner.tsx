@@ -27,38 +27,18 @@ export default function SessionCodeBanner({
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const socket = useGameStore((state) => state.socket);
+  // const socket = useGameStore((state) => state.socket);
 
   useEffect(() => {
-    if (!socket) return;
-
-    const addMessage = (text: string, type: Message["type"]) => {
-      const newMessage = { id: Date.now(), text, type };
+    const unsubscribe = useGameStore.getState().subscribeToMessages((msg) => {
+      const newMessage = { id: Date.now(), ...msg };
       setMessages((prev) => [...prev, newMessage]);
       setTimeout(() => {
         setMessages((current) => current.filter((m) => m.id !== newMessage.id));
       }, 3000);
-    };
-
-    const handlePlayerJoined = (username: string) =>
-      addMessage(`${username} has joined the session`, "join");
-    const handlePlayerLeft = (username: string) =>
-      addMessage(`${username} has left the session`, "leave");
-    const handleHostChange = (hostId: number) => {
-      const hostName = useGameStore.getState().getHostNameById(hostId);
-      addMessage(`${hostName} is now the host`, "host");
-    };
-
-    socket.on("player_joined", handlePlayerJoined);
-    socket.on("player_left", handlePlayerLeft);
-    socket.on("host_change", handleHostChange);
-
-    return () => {
-      socket.off("player_joined", handlePlayerJoined);
-      socket.off("player_left", handlePlayerLeft);
-      socket.off("host_change", handleHostChange);
-    };
-  }, [socket]);
+    });
+    return unsubscribe;
+  }, []);
 
   const leaveSession = () => {
     window.location.href = "/Dashboard";
