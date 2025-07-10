@@ -7,11 +7,6 @@ interface JoinSessionPayload {
   sessionCode: string;
 }
 
-// interface LeaveSessionPayload {
-//   username: string;
-//   sessionCode: string;
-// }
-
 interface Player {
   id: number;
   username: string;
@@ -20,7 +15,8 @@ interface Player {
 interface GameState {
   players: Player[];
   hostId: number | null;
-  currentPlayerId: number | null;
+  cardHolderId: number | null;
+  currentUser?: { username: string; email: string };
   socket: SocketIOClient.Socket | null;
 }
 
@@ -29,12 +25,15 @@ interface GameActions {
   joinSession: (payload: JoinSessionPayload) => void;
   // emitLeaveSession: (payload: LeaveSessionPayload) => void;
   disconnectAndCleanup: () => void;
+
+  isCurrentUserHost: () => boolean;
+  getCardHolder: () => Player | undefined;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
   players: [],
   hostId: null,
-  currentPlayerId: null,
+  cardHolderId: null,
   socket: null,
 
   connectSocket: () => {
@@ -47,14 +46,14 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
 
     socket.on("disconnect", () => {
       console.log("Socket disconnected.");
-      set({ socket: null, players: [], hostId: null, currentPlayerId: null });
+      set({ socket: null, players: [], hostId: null, cardHolderId: null });
     });
 
     socket.on("game_state_update", (gameState: GameState) => {
       set({
         players: gameState.players,
         hostId: gameState.hostId,
-        currentPlayerId: gameState.currentPlayerId,
+        cardHolderId: gameState.cardHolderId,
       });
     });
 
@@ -62,12 +61,26 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   },
 
   joinSession: (payload) => {
+    set({ currentUser: { username: payload.username, email: payload.email } });
     const socket = get().socket;
     if (!socket) {
       console.error("joinSession called but socket is not connected.");
       return;
     }
     socket.emit("join_session", payload);
+  },
+
+  isCurrentUserHost: () => {
+    const { hostId, currentUser, players } = get();
+    if (!currentUser) return false;
+    const me = players.find((p) => p.username === currentUser.username);
+    return me ? me.id === hostId : false;
+  },
+
+  getCardHolder: () => {
+    const { players, currentUser } = get();
+    const me = players.find((p) => p.username === currentUser?.username);
+    return me;
   },
 
   // emitLeaveSession: (payload) => {

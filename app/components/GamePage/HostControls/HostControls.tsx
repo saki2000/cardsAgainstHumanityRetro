@@ -2,20 +2,18 @@
 
 import { useState } from "react";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
-// import { useGameStore } from "@/lib/gameStore";
+import { useGameStore } from "@/lib/gameStore";
 
 export default function HostControls() {
   const [isEndGameModalOpen, setIsEndGameModalOpen] = useState(false);
   const [isStartRoundModalOpen, setIsStartRoundModalOpen] = useState(false);
   const [isFirstRound, setIsFirstRound] = useState(true);
 
-  // const hostId = useGameStore((state) => state.hostId);
+  const isHost = useGameStore((state) => state.isCurrentUserHost());
 
-  // const isHost = currentUser && hostId && currentUser.id === hostId;
-
-  // if (!isHost) {
-  //   return null;
-  // }
+  if (!isHost) {
+    return null;
+  }
 
   const handleConfirmEnd = () => {
     console.log("Session ended");
