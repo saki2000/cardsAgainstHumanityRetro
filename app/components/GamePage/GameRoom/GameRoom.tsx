@@ -5,6 +5,7 @@ import PlayerList from "../PlayerList/PlayerList";
 import { useSession } from "next-auth/react";
 import { useGameStore } from "@/lib/gameStore";
 import Loading from "@/app/loading";
+import CardDeck from "../CardDeck/CardDeck";
 
 interface Props {
   sessionCode: string;
@@ -54,8 +55,13 @@ export default function GameRoom({ sessionCode }: Props) {
   }
 
   return (
-    <div className="flex-1 border-4 border-white rounded-lg shadow-lg bg-black m-2">
-      <PlayerList />
+    <div className="flex-1 border-4 border-white rounded-lg shadow-lg bg-black m- flex flex-col justify-between">
+      <div>
+        <PlayerList />
+      </div>
+      <div className="mb-24 mx-4">
+        <CardDeck />
+      </div>
     </div>
   );
 }
