@@ -27,8 +27,6 @@ export default function SessionCodeBanner({
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  // const socket = useGameStore((state) => state.socket);
-
   useEffect(() => {
     const unsubscribe = useGameStore.getState().subscribeToMessages((msg) => {
       const newMessage = { id: Date.now(), ...msg };

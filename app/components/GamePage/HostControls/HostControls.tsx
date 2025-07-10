@@ -12,9 +12,9 @@ export default function HostControls({ sessionCode }: Props) {
   const [isEndGameModalOpen, setIsEndGameModalOpen] = useState(false);
   const [isStartRoundModalOpen, setIsStartRoundModalOpen] = useState(false);
 
+  const sessionStarted = useGameStore((state) => state.sessionStarted);
   const isHost = useGameStore((state) => state.isCurrentUserHost());
-  const isFirstRound = useGameStore((state) => state.isFirstRound);
-  const setIsFirstRound = useGameStore((state) => state.setFirstRound);
+  const startSession = useGameStore((state) => state.startSession);
   const endSession = useGameStore((state) => state.endSession);
 
   if (!isHost) {
@@ -27,11 +27,7 @@ export default function HostControls({ sessionCode }: Props) {
   };
 
   const handleConfirmStart = () => {
-    if (isFirstRound) {
-      setIsFirstRound(false);
-    } else {
-      console.log("Next round started");
-    }
+    startSession(sessionCode);
     setIsStartRoundModalOpen(false);
   };
 
@@ -42,7 +38,7 @@ export default function HostControls({ sessionCode }: Props) {
           className="btn-primary"
           onClick={() => setIsStartRoundModalOpen(true)}
         >
-          {isFirstRound ? "Start game" : "Next Round"}
+          {sessionStarted ? "Next Round" : "Start Game"}
         </button>
 
         <p className="text-sm font-semibold">Host Controls</p>
@@ -71,13 +67,13 @@ export default function HostControls({ sessionCode }: Props) {
           closeModal={() => setIsStartRoundModalOpen(false)}
           onConfirm={handleConfirmStart}
           onCancel={() => setIsStartRoundModalOpen(false)}
-          title={isFirstRound ? "Confirm Start Game" : "Start New Round"}
+          title={sessionStarted ? "Start New Round" : "Confirm Start Game"}
           message={
-            isFirstRound
-              ? "Are you sure you want to start the game?"
-              : "Are you sure you want to start a new round?"
+            sessionStarted
+              ? "Are you sure you want to start a new round?"
+              : "Are you sure you want to start the game?"
           }
-          okText={isFirstRound ? "Start game" : "Start Round"}
+          okText={"Let's Go!"}
           cancelText="Cancel"
         />
       </div>

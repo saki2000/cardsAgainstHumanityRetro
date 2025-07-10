@@ -22,6 +22,7 @@ export default function GameRoom({ sessionCode }: Props) {
     (state) => state.disconnectAndCleanup,
   );
   const socket = useGameStore((state) => state.socket);
+  const gameStarted = useGameStore((state) => state.sessionStarted);
   const sessionEnded = useGameStore((state) => state.sessionEnded);
   const hasJoined = useRef(false);
 
@@ -68,10 +69,13 @@ export default function GameRoom({ sessionCode }: Props) {
   return (
     <div className="flex-1 border-4 border-white rounded-lg shadow-lg bg-black m-2 flex flex-col justify-between">
       <PlayerList />
-      <WaitingForStartBanner />
-      <div className="mb-24 mx-4">
-        <CardDeck />
-      </div>
+      {!gameStarted ? (
+        <WaitingForStartBanner />
+      ) : (
+        <div className="mb-24 mx-4">
+          <CardDeck />
+        </div>
+      )}
     </div>
   );
 }

@@ -25,7 +25,7 @@ interface GameState {
   cardHolderId: number | null;
   currentUser?: { username: string; email: string };
   socket: SocketIOClient.Socket | null;
-  isFirstRound: boolean;
+  sessionStarted: boolean;
   sessionEnded: boolean;
 }
 
@@ -38,8 +38,9 @@ interface GameActions {
   isCurrentUserHost: () => boolean;
   getCardHolder: () => Player | undefined;
   getHostNameById: (id: number) => string | null;
-  setFirstRound: (isFirstRound: boolean) => void;
+  startSession: (sessionCode: string) => void;
   endSession: (sessionCode: string) => void;
+  subscribeToMessages: (cb: MessageCallback) => () => void;
   _emitMessage: (msg: {
     text: string;
     type: "join" | "leave" | "host";
@@ -52,7 +53,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   hostId: null,
   cardHolderId: null,
   socket: null,
-  isFirstRound: true,
+  sessionStarted: false,
   sessionEnded: false,
 
   subscribeToMessages: (cb: MessageCallback) => {
@@ -111,6 +112,10 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       set({ sessionEnded: true });
     });
 
+    socket.on("session_started", () => {
+      set({ sessionStarted: true });
+    });
+
     set({ socket });
   },
 
@@ -122,6 +127,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       return;
     }
     socket.emit("join_session", payload);
+  },
+
+  startSession: (sessionCode: string) => {
+    const socket = get().socket;
+    if (socket) {
+      socket.emit("start_session", { sessionCode });
+    }
   },
 
   endSession: (sessionCode: string) => {
@@ -156,9 +168,5 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   getHostNameById: (id: number) => {
     const { players } = get();
     return players.find((p) => p.id === id)?.username || null;
-  },
-
-  setFirstRound: (isFirstRound: boolean) => {
-    set({ isFirstRound });
   },
 }));
