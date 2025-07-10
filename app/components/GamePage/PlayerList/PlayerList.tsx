@@ -16,6 +16,9 @@ export default function PlayerList() {
           </li>
         ))}
       </ul>
+      <p>
+        current card holder: {useGameStore.getState().getCardHolder()?.username}
+      </p>
     </aside>
   );
 }

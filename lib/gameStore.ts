@@ -28,6 +28,7 @@ interface GameActions {
 
   isCurrentUserHost: () => boolean;
   getCardHolder: () => Player | undefined;
+  getHostNameById: (id: number) => string | null;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -77,10 +78,22 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     return me ? me.id === hostId : false;
   },
 
+  // getCardHolder: () => {
+  //   const { players, currentUser } = get();
+  //   const me = players.find((p) => p.username === currentUser?.username);
+  //   return me;
+  // },
+
   getCardHolder: () => {
-    const { players, currentUser } = get();
-    const me = players.find((p) => p.username === currentUser?.username);
-    return me;
+    const { cardHolderId } = get();
+    return cardHolderId
+      ? get().players.find((p) => p.id === cardHolderId)
+      : undefined;
+  },
+
+  getHostNameById: (id: number) => {
+    const { players } = get();
+    return players.find((p) => p.id === id)?.username || null;
   },
 
   // emitLeaveSession: (payload) => {
@@ -96,7 +109,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     const socket = get().socket;
     if (socket) {
       socket.disconnect();
-      set({ socket: null, players: [], hostId: null });
+      set({ socket: null, players: [], hostId: null, cardHolderId: null });
     }
   },
 }));

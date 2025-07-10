@@ -44,8 +44,10 @@ export default function SessionCodeBanner({
       addMessage(`${username} has joined the session`, "join");
     const handlePlayerLeft = (username: string) =>
       addMessage(`${username} has left the session`, "leave");
-    const handleHostChange = (username: string) =>
-      addMessage(`${username} is now the host`, "host");
+    const handleHostChange = (hostId: number) => {
+      const hostName = useGameStore.getState().getHostNameById(hostId);
+      addMessage(`${hostName} is now the host`, "host");
+    };
 
     socket.on("player_joined", handlePlayerJoined);
     socket.on("player_left", handlePlayerLeft);
