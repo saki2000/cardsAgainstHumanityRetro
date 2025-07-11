@@ -1,6 +1,6 @@
-import ChangePasswordModal from "../Modals/ChangePasswordModal";
+import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 
-export default function SettingsPageContainer() {
+export default function SettingTable() {
   const atributes = ["Password"];
 
   return (

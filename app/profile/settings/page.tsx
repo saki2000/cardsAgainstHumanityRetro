@@ -1,4 +1,4 @@
-import SettingsPageContainer from "@/app/components/PageConteiners/SettingsPageContainer";
+import SettingsPageContainer from "@/app/components/SettingPage/SettingTable/SettingTable";
 import ReturnButton from "@/app/components/ReturnButton/ReturnButton";
 
 export default function SettingsPage() {

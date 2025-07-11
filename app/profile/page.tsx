@@ -1,9 +1,7 @@
+import ProfileDetailsTable from "../components/ProfilePage/ProfileDetailsTable/ProfileDetailsTable";
 import ReturnButton from "../components/ReturnButton/ReturnButton";
 
 export default function ProfilePage() {
-  // TODO: make this page dynamic, fetching user data from the server (maybe using email?)
-  const atributes = ["Name", "Email", "Best Score", "Games Played"];
-
   return (
     <div className="flex flex-col items-center min-h-screen bg-black px-2 py-8">
       <div className="w-full max-w-4xl">
@@ -16,28 +14,7 @@ export default function ProfilePage() {
           </h1>
           <div className="w-full sm:w-auto" />
         </div>
-        <div className="overflow-x-auto">
-          <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg bg-white w-full mx-auto">
-            <table className="min-w-full text-sm text-left">
-              <tbody>
-                {atributes.map((atribute) => (
-                  <tr
-                    key={atribute}
-                    className="even:bg-gray-100 odd:bg-white hover:bg-gray-200 transition"
-                  >
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-semibold text-gray-700 capitalize whitespace-nowrap border-r border-gray-300"
-                    >
-                      {atribute}
-                    </th>
-                    <td className="px-6 py-4 text-gray-900">{"value"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <ProfileDetailsTable />
       </div>
     </div>
   );

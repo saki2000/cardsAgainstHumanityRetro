@@ -50,8 +50,14 @@ export default function JoinSessionTile({ lockButton, setlockButton }: Props) {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleJoinSession();
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center h-full border-2 px-2 py-3 border-white rounded-lg shadow-lg">
+    <div className="tile border-2 border-white">
       <h2 className="text-2xl font-bold mb-4">Join a Session</h2>
       <p className="mb-6">Enter the session code to join an existing game.</p>
 
@@ -61,6 +67,7 @@ export default function JoinSessionTile({ lockButton, setlockButton }: Props) {
         placeholder="Session Code"
         value={sessionCode}
         onChange={(e) => setSessionCode(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="border border-gray-300 rounded-lg p-2 mb-4 w-64 bg-white text-black"
       />
       <p className="text-red-500">{errorMessage} </p>
@@ -68,7 +75,7 @@ export default function JoinSessionTile({ lockButton, setlockButton }: Props) {
         className={`px-4 py-2 rounded-lg          ${
           lockButton
             ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-            : "bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+            : "btn-primary"
         }`}
         onClick={handleJoinSession}
         disabled={lockButton}
