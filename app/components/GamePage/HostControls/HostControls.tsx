@@ -15,6 +15,7 @@ export default function HostControls({ sessionCode }: Props) {
   const sessionStarted = useGameStore((state) => state.sessionStarted);
   const isHost = useGameStore((state) => state.isCurrentUserHost());
   const startSession = useGameStore((state) => state.startSession);
+  const endRound = useGameStore((state) => state.endRound);
   const endSession = useGameStore((state) => state.endSession);
 
   if (!isHost) {
@@ -27,7 +28,11 @@ export default function HostControls({ sessionCode }: Props) {
   };
 
   const handleConfirmStart = () => {
-    startSession(sessionCode);
+    if (sessionStarted) {
+      endRound(sessionCode);
+    } else {
+      startSession(sessionCode);
+    }
     setIsStartRoundModalOpen(false);
   };
 

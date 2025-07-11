@@ -39,6 +39,7 @@ interface GameActions {
   getCardHolder: () => Player | undefined;
   getHostNameById: (id: number) => string | null;
   startSession: (sessionCode: string) => void;
+  endRound: (sessionCode: string) => void;
   endSession: (sessionCode: string) => void;
   subscribeToMessages: (cb: MessageCallback) => () => void;
   _emitMessage: (msg: {
@@ -133,6 +134,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     const socket = get().socket;
     if (socket) {
       socket.emit("start_session", { sessionCode });
+    }
+  },
+
+  endRound: (sessionCode: string) => {
+    const socket = get().socket;
+    if (socket) {
+      socket.emit("end_of_round", { sessionCode });
     }
   },
 
