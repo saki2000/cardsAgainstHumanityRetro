@@ -1,42 +1,53 @@
 "use client";
 
-import { useUserStore } from "@/lib/userStore";
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
+import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
+import { useGameStore } from "@/lib/gameStore";
 
 interface SessionCodeBannerProps {
   sessionCode: string;
 }
 
+interface Message {
+  id: number;
+  text: string;
+  type: "join" | "leave" | "host";
+}
+
+const messageStyles = {
+  join: "text-green-400",
+  leave: "text-red-400",
+  host: "text-blue-400",
+};
+
 export default function SessionCodeBanner({
   sessionCode,
 }: SessionCodeBannerProps) {
-  const [message, setMessage] = useState<string | null>(null);
-  const socket = useUserStore((state) => state.socket);
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    if (socket) {
-      socket.on("player_joined", (username: string) => {
-        setMessage(`${username} has joined the session.`);
-      });
+    const unsubscribe = useGameStore.getState().subscribeToMessages((msg) => {
+      const newMessage = { id: Date.now(), ...msg };
+      setMessages((prev) => [...prev, newMessage]);
+      setTimeout(() => {
+        setMessages((current) => current.filter((m) => m.id !== newMessage.id));
+      }, 3000);
+    });
+    return unsubscribe;
+  }, []);
 
-      socket.on("player_left", (username: string) => {
-        console.log("Player left event received:", username);
-        setMessage(`${username} has left the session.`);
-      });
-
-      const timeout = setTimeout(() => setMessage(null), 1000);
-
-      return () => {
-        clearTimeout(timeout);
-        socket.off("player_joined");
-        socket.off("player_left");
-      };
-    }
-  }, [socket]);
+  const leaveSession = () => {
+    window.location.href = "/Dashboard";
+  };
 
   const handleLeaveSession = () => {
-    window.location.href = "/Dashboard";
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -47,15 +58,18 @@ export default function SessionCodeBanner({
           {sessionCode}
         </p>
       </div>
-      {message && (
-        <p
-          className={`text-sm ${
-            message.includes("joined") ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {message}
-        </p>
-      )}
+
+      <div className="flex flex-col items-center">
+        {messages.map((msg) => (
+          <p
+            key={msg.id}
+            className={`text-sm font-semibold ${messageStyles[msg.type]}`}
+          >
+            {msg.text}
+          </p>
+        ))}
+      </div>
+
       <button
         className="btn-cancel flex items-center gap-2"
         onClick={handleLeaveSession}
@@ -63,6 +77,17 @@ export default function SessionCodeBanner({
         <ArrowLeftOnRectangleIcon className="h-8 w-8" />
         <span>Leave</span>
       </button>
+      <ConfirmationModal
+        isOpen={isOpen}
+        closeModal={() => {}}
+        onConfirm={leaveSession}
+        onCancel={closeModal}
+        title="Confirm Leave"
+        message="Are you sure you want to leave the session?"
+        okText="Leave"
+        cancelText="Cancel"
+        isWarning={true}
+      />
     </div>
   );
 }
