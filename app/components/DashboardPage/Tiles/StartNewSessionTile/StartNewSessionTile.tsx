@@ -49,15 +49,15 @@ export default function StartNewSessionTile({
       setlockButton(false);
       return;
     }
-    setIsOpen(true);
+
     try {
       const response = await axios.post("/api/session/create", payload, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      setSessionCode(response.data); // Adjust if your backend returns { code: ... }
+      setIsOpen(true);
+      setSessionCode(response.data); //TODO: Adjust if your backend returns { code: ... }
       toast.success("Session created!", {
         position: "bottom-right",
       });
