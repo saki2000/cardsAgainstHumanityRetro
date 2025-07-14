@@ -5,6 +5,7 @@ import { useCardDeckStore } from "@/lib/CardDeckStore";
 import { useGameStore } from "@/lib/GameStore";
 import Card from "../Card/Card";
 import AnswerSlots from "../AnswerSlot/AnswerSlots";
+import AnswerDeck from "../../AnswerDeck/AnswerDeck";
 
 interface Props {
   sessionCode: string;
@@ -19,12 +20,34 @@ export default function GameContainer({ sessionCode }: Props) {
 
   const handleDragEnd: DndContextProps["onDragEnd"] = (event) => {
     const { active, over } = event;
-    if (over) {
-      const cardId = active.id;
-      const slotId = over.id as "slot1" | "slot2" | "slot3";
 
+    // Ensure we have a drop target
+    if (!over) return;
+
+    const activeType = active.data.current?.type;
+    const overType = over.data.current?.type;
+
+    console.log("Drag Ended", { activeType, overType });
+
+    // Logic for dropping a Question Card onto a Table Slot
+    if (activeType === "question-card" && overType === "table-slot") {
+      const cardId = active.id as string;
+      const slotId = over.id as "slot1" | "slot2" | "slot3";
       playCard(sessionCode, Number(cardId), slotId);
+      return;
     }
+
+    // Logic for dropping an Answer Card onto an Answer Slot
+    if (activeType === "answer-card" && overType === "answer-slot") {
+      const answerText = active.data.current?.text;
+      const slotId = over.id as string; // "answerSlot1", "answerSlot2", etc.
+      //   submitAnswer(sessionCode, slotId, answerText);
+      console.log(`Answer submitted to ${slotId}: ${answerText}`);
+      return;
+    }
+
+    // If it's not a valid drop combination, do nothing.
+    console.log("Invalid drop");
   };
 
   return (
@@ -90,7 +113,7 @@ export default function GameContainer({ sessionCode }: Props) {
           </div>
         </div>
 
-        {isCurrentUserCardHolder() ? <CardDeck /> : null}
+        {isCurrentUserCardHolder() ? <CardDeck /> : <AnswerDeck />}
       </div>
     </DndContext>
   );

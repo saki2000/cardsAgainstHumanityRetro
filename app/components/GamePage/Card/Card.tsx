@@ -13,6 +13,9 @@ export default function Card({ id, text, isDraggable }: Props) {
     useDraggable({
       id: id,
       disabled: !isDraggable,
+      data: {
+        type: "question-card",
+      },
     });
 
   const cornerText = "R";
