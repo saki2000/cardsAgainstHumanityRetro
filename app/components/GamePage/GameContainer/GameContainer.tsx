@@ -1,7 +1,6 @@
 import CardDeck from "../CardDeck/CardDeck";
 import { DndContext, DndContextProps } from "@dnd-kit/core";
 import TableSlot from "../TableSlot/TableSlot";
-
 import { useCardDeckStore } from "@/lib/CardDeckStore";
 import { useGameStore } from "@/lib/GameStore";
 import Card from "../Card/Card";
