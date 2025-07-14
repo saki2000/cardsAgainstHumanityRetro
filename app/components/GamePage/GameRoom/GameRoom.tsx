@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import PlayerList from "../PlayerList/PlayerList";
 import { useSession } from "next-auth/react";
-import { useGameStore } from "@/lib/gameStore";
+import { useGameStore } from "@/lib/GameStore";
 import Loading from "@/app/loading";
 import WaitingForStartBanner from "../WaitingForStartBanner/WaitingForStartBanner";
 import { useRouter } from "next/navigation";
@@ -69,7 +69,11 @@ export default function GameRoom({ sessionCode }: Props) {
   return (
     <div className="flex-1 border-4 border-white rounded-lg shadow-lg bg-black m-2 flex flex-col ">
       <PlayerList />
-      {!gameStarted ? <WaitingForStartBanner /> : <GameContainer />}
+      {!gameStarted ? (
+        <WaitingForStartBanner />
+      ) : (
+        <GameContainer sessionCode={sessionCode} />
+      )}
     </div>
   );
 }
