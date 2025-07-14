@@ -36,6 +36,7 @@ interface GameActions {
   disconnectAndCleanup: () => void;
 
   isCurrentUserHost: () => boolean;
+  isCurrentUserCardHolder: () => boolean;
   getCardHolder: () => Player | undefined;
   getHostNameById: (id: number) => string | null;
   startSession: (sessionCode: string) => void;
@@ -106,15 +107,12 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         players: gameState.players,
         hostId: gameState.hostId,
         cardHolderId: gameState.cardHolderId,
+        sessionStarted: gameState.sessionStarted,
       });
     });
 
     socket.on("session_ended", () => {
       set({ sessionEnded: true });
-    });
-
-    socket.on("session_started", () => {
-      set({ sessionStarted: true });
     });
 
     set({ socket });
@@ -164,6 +162,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     if (!currentUser) return false;
     const me = players.find((p) => p.username === currentUser.username);
     return me ? me.id === hostId : false;
+  },
+
+  isCurrentUserCardHolder: () => {
+    const { cardHolderId, currentUser, players } = get();
+    if (!currentUser) return false;
+    const me = players.find((p) => p.username === currentUser.username);
+    return me ? me.id === cardHolderId : false;
   },
 
   getCardHolder: () => {
