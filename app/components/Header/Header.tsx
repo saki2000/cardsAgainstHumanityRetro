@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between bg-gray-800 text-white sticky top-0">
+    <header className="flex items-center justify-between bg-gray-800 text-white sticky top-0 z-20">
       <Link href="/" className="flex items-center">
         <Image
           src="/logo.png"

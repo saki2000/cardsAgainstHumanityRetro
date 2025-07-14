@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import io from "socket.io-client";
-
+import { useCardDeckStore } from "@/lib/CardDeckStore";
 interface JoinSessionPayload {
   username: string;
   email: string;
@@ -19,6 +19,28 @@ type MessageCallback = (msg: {
 
 let messageListeners: MessageCallback[] = [];
 
+type CardTypes = "GOOD" | "BAD" | "OTHER";
+
+interface Card {
+  id: number;
+  content: string;
+  type: CardTypes;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type SlotId = "slot1" | "slot2" | "slot3";
+
+export interface Slots {
+  slot1: Card | null;
+  slot2: Card | null;
+  slot3: Card | null;
+}
+
+interface CardDeckState {
+  hand: Card[];
+  slots: Slots;
+}
+
 interface GameState {
   players: Player[];
   hostId: number | null;
@@ -36,6 +58,7 @@ interface GameActions {
   disconnectAndCleanup: () => void;
 
   isCurrentUserHost: () => boolean;
+  isCurrentUserCardHolder: () => boolean;
   getCardHolder: () => Player | undefined;
   getHostNameById: (id: number) => string | null;
   startSession: (sessionCode: string) => void;
@@ -46,6 +69,7 @@ interface GameActions {
     text: string;
     type: "join" | "leave" | "host";
   }) => void;
+  playCard: (sessionCode: string, cardId: number, slotId: string) => void;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -106,6 +130,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         players: gameState.players,
         hostId: gameState.hostId,
         cardHolderId: gameState.cardHolderId,
+        sessionStarted: gameState.sessionStarted,
       });
     });
 
@@ -113,8 +138,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       set({ sessionEnded: true });
     });
 
-    socket.on("session_started", () => {
-      set({ sessionStarted: true });
+    socket.on("deal_cards", (cards: Card[]) => {
+      console.log("Received private hand:", cards);
+      useCardDeckStore.getState().setHand(cards);
+    });
+
+    socket.on("slots_updated", (updatedSlots: CardDeckState["slots"]) => {
+      useCardDeckStore.getState().setSlots(updatedSlots);
     });
 
     set({ socket });
@@ -166,6 +196,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     return me ? me.id === hostId : false;
   },
 
+  isCurrentUserCardHolder: () => {
+    const { cardHolderId, currentUser, players } = get();
+    if (!currentUser) return false;
+    const me = players.find((p) => p.username === currentUser.username);
+    return me ? me.id === cardHolderId : false;
+  },
+
   getCardHolder: () => {
     const { cardHolderId } = get();
     return cardHolderId
@@ -176,5 +213,14 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   getHostNameById: (id: number) => {
     const { players } = get();
     return players.find((p) => p.id === id)?.username || null;
+  },
+
+  playCard: (sessionCode: string, cardId: number, slotId: string) => {
+    const socket = get().socket;
+    if (socket && sessionCode) {
+      socket.emit("play_card", { sessionCode, cardId, slotId });
+      const { hand } = useCardDeckStore.getState();
+      useCardDeckStore.getState().setHand(hand.filter((c) => c.id !== cardId));
+    }
   },
 }));
