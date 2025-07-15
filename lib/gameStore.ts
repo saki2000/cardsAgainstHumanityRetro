@@ -36,11 +36,6 @@ export interface Slots {
   slot3: Card | null;
 }
 
-interface CardDeckState {
-  hand: Card[];
-  slots: Slots;
-}
-
 interface GameState {
   players: Player[];
   hostId: number | null;
@@ -49,6 +44,7 @@ interface GameState {
   socket: SocketIOClient.Socket | null;
   sessionStarted: boolean;
   sessionEnded: boolean;
+  slots: Record<string, Card | null>;
 }
 
 interface GameActions {
@@ -80,6 +76,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   socket: null,
   sessionStarted: false,
   sessionEnded: false,
+  slots: {},
 
   subscribeToMessages: (cb: MessageCallback) => {
     messageListeners.push(cb);
@@ -131,7 +128,15 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         hostId: gameState.hostId,
         cardHolderId: gameState.cardHolderId,
         sessionStarted: gameState.sessionStarted,
+        slots: gameState.slots,
       });
+      if (gameState.slots) {
+        useCardDeckStore.getState().setSlots({
+          slot1: gameState.slots.slot1 || null,
+          slot2: gameState.slots.slot2 || null,
+          slot3: gameState.slots.slot3 || null,
+        });
+      }
     });
 
     socket.on("session_ended", () => {
@@ -141,10 +146,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     socket.on("deal_cards", (cards: Card[]) => {
       console.log("Received private hand:", cards);
       useCardDeckStore.getState().setHand(cards);
-    });
-
-    socket.on("slots_updated", (updatedSlots: CardDeckState["slots"]) => {
-      useCardDeckStore.getState().setSlots(updatedSlots);
     });
 
     set({ socket });
