@@ -9,6 +9,9 @@ export default function TableSlot({ id, children, isOccupied }: Props) {
   const { isOver, setNodeRef } = useDroppable({
     id: id,
     disabled: isOccupied,
+    data: {
+      type: "table-slot",
+    },
   });
 
   const style = {
