@@ -14,6 +14,7 @@ interface Props {
 export default function GameContainer({ sessionCode }: Props) {
   const { slots } = useCardDeckStore();
   const playCard = useGameStore((state) => state.playCard);
+  const submitComment = useGameStore((state) => state.submitComment);
   const isCurrentUserCardHolder = useGameStore(
     (state) => state.isCurrentUserCardHolder,
   );
@@ -21,15 +22,11 @@ export default function GameContainer({ sessionCode }: Props) {
   const handleDragEnd: DndContextProps["onDragEnd"] = (event) => {
     const { active, over } = event;
 
-    // Ensure we have a drop target
     if (!over) return;
 
     const activeType = active.data.current?.type;
     const overType = over.data.current?.type;
 
-    console.log("Drag Ended", { activeType, overType });
-
-    // Logic for dropping a Question Card onto a Table Slot
     if (activeType === "question-card" && overType === "table-slot") {
       const cardId = active.id as string;
       const slotId = over.id as "slot1" | "slot2" | "slot3";
@@ -37,16 +34,26 @@ export default function GameContainer({ sessionCode }: Props) {
       return;
     }
 
-    // Logic for dropping an Answer Card onto an Answer Slot
     if (activeType === "answer-card" && overType === "answer-slot") {
-      const answerText = active.data.current?.text;
-      const slotId = over.id as string; // "answerSlot1", "answerSlot2", etc.
-      //   submitAnswer(sessionCode, slotId, answerText);
-      console.log(`Answer submitted to ${slotId}: ${answerText}`);
+      const answerText = active.data.current?.text || "";
+      const answerSlotId = over.id as string;
+
+      const correspondingSlotKey = answerSlotId.replace(
+        "answerSlot",
+        "slot",
+      ) as keyof typeof slots;
+
+      const playedCard = slots[correspondingSlotKey];
+
+      if (playedCard && playedCard.sessionCardId) {
+        submitComment(sessionCode, playedCard.sessionCardId, answerText);
+      } else {
+        console.error(
+          `Could not find a played card in ${correspondingSlotKey} to comment on.`,
+        );
+      }
       return;
     }
-
-    // If it's not a valid drop combination, do nothing.
     console.log("Invalid drop");
   };
 

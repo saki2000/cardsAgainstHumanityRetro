@@ -19,12 +19,18 @@ type MessageCallback = (msg: {
 
 let messageListeners: MessageCallback[] = [];
 
-type CardTypes = "GOOD" | "BAD" | "OTHER";
+interface Comments {
+  id: number;
+  authorName: string;
+  content: string;
+  vouteCount: number;
+}
 
 interface Card {
   id: number;
+  sessionId: number;
   content: string;
-  type: CardTypes;
+  comments?: Comments[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -50,7 +56,6 @@ interface GameState {
 interface GameActions {
   connectSocket: () => void;
   joinSession: (payload: JoinSessionPayload) => void;
-  // emitLeaveSession: (payload: LeaveSessionPayload) => void;
   disconnectAndCleanup: () => void;
 
   isCurrentUserHost: () => boolean;
@@ -66,6 +71,11 @@ interface GameActions {
     type: "join" | "leave" | "host";
   }) => void;
   playCard: (sessionCode: string, cardId: number, slotId: string) => void;
+  submitComment: (
+    sessionCode: string,
+    sessionCardId: number,
+    content: string,
+  ) => void;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -222,6 +232,20 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       socket.emit("play_card", { sessionCode, cardId, slotId });
       const { hand } = useCardDeckStore.getState();
       useCardDeckStore.getState().setHand(hand.filter((c) => c.id !== cardId));
+    }
+  },
+
+  submitComment: (
+    sessionCode: string,
+    sessionCardId: number,
+    content: string,
+  ) => {
+    const socket = get().socket;
+    console.log(
+      `Submitting comment for card ID ${sessionCardId} with content: ${content} in session ${sessionCode}`,
+    );
+    if (socket && sessionCode) {
+      socket.emit("submit_comment", { sessionCode, sessionCardId, content });
     }
   },
 }));

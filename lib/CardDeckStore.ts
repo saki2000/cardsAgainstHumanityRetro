@@ -1,11 +1,17 @@
 import { create } from "zustand";
 
-type CardTypes = "GOOD" | "BAD" | "OTHER";
+interface Comments {
+  id: number;
+  authorName: string;
+  content: string;
+  vouteCount: number;
+}
 
 interface Card {
   id: number;
+  sessionCardId: number;
   content: string;
-  type: CardTypes;
+  comments?: Comments[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
