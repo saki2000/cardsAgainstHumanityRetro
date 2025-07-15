@@ -28,7 +28,7 @@ export interface Comments {
 
 interface Card {
   id: number;
-  sessionId: number;
+  sessionCardId: number;
   content: string;
   comments?: Comments[];
 }
