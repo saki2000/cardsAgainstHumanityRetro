@@ -23,7 +23,7 @@ export default function AnswerSlots({ id, comments }: Props) {
     <div
       ref={setNodeRef}
       id={id}
-      className={`min-h-64 w-full border-2 border-dashed rounded-lg flex flex-col p-2 bg-gray-700 transition-colors overflow-y-auto ${style}`}
+      className={`min-h-64 w-64 border-2 border-dashed rounded-lg flex flex-col p-2 bg-gray-700 transition-colors ${style}`}
     >
       {comments && comments.length > 0 ? (
         comments.map((comment) => (
