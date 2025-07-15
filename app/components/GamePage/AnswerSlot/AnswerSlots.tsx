@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import CommentDisplay from "../CommentDisplay/CommentDisplay";
-import { Comments } from "@/lib/GameStore";
+import { Comments } from "@/lib/GameStore_";
 
 interface Props {
   sessionCode: string;

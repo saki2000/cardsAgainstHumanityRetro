@@ -2,7 +2,7 @@ import CardDeck from "../CardDeck/CardDeck";
 import { DndContext, DndContextProps } from "@dnd-kit/core";
 import TableSlot from "../TableSlot/TableSlot";
 import { useCardDeckStore } from "@/lib/CardDeckStore";
-import { useGameStore } from "@/lib/GameStore";
+import { useGameStore } from "@/lib/GameStore_";
 import Card from "../Card/Card";
 import AnswerSlots from "../AnswerSlot/AnswerSlots";
 import AnswerDeck from "../../AnswerDeck/AnswerDeck";

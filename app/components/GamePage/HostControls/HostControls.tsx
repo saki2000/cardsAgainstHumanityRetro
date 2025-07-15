@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
-import { useGameStore } from "@/lib/GameStore";
+import { useGameStore } from "@/lib/GameStore_";
 
 interface Props {
   sessionCode: string;

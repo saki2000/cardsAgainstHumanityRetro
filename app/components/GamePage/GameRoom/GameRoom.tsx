@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import PlayerList from "../PlayerList/PlayerList";
 import { useSession } from "next-auth/react";
-import { useGameStore } from "@/lib/GameStore";
+import { useGameStore } from "@/lib/GameStore_";
 import Loading from "@/app/loading";
 import WaitingForStartBanner from "../WaitingForStartBanner/WaitingForStartBanner";
 import { useRouter } from "next/navigation";

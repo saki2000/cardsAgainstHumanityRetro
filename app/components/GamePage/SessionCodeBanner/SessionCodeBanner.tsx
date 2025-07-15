@@ -3,7 +3,7 @@
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
-import { useGameStore } from "@/lib/GameStore";
+import { useGameStore } from "@/lib/GameStore_";
 
 interface SessionCodeBannerProps {
   sessionCode: string;
