@@ -76,6 +76,7 @@ interface GameActions {
     sessionCardId: number,
     content: string,
   ) => void;
+  voteForComment: (sessionCode: string, commentId: number) => void;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -246,6 +247,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     );
     if (socket && sessionCode) {
       socket.emit("submit_comment", { sessionCode, sessionCardId, content });
+    }
+  },
+
+  voteForComment: (sessionCode, commentId) => {
+    const socket = get().socket;
+    if (socket && sessionCode) {
+      socket.emit("vote_comment", { commentId });
     }
   },
 }));

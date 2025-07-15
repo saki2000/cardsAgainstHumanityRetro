@@ -46,6 +46,10 @@ export default function GameContainer({ sessionCode }: Props) {
       const playedCard = slots[correspondingSlotKey];
 
       if (playedCard && playedCard.sessionCardId) {
+        if (!answerText.trim()) {
+          console.error("Answer text cannot be empty.");
+          return;
+        } //TODO: Need to refactor this function to smaller functions
         submitComment(sessionCode, playedCard.sessionCardId, answerText);
       } else {
         console.error(
@@ -76,6 +80,7 @@ export default function GameContainer({ sessionCode }: Props) {
 
             {slots.slot1 && (
               <AnswerSlots
+                sessionCode={sessionCode}
                 id="answerSlot1"
                 comments={slots.slot1.comments || []}
               />
@@ -96,6 +101,7 @@ export default function GameContainer({ sessionCode }: Props) {
             </TableSlot>
             {slots.slot2 && (
               <AnswerSlots
+                sessionCode={sessionCode}
                 id="answerSlot2"
                 comments={slots.slot2.comments || []}
               />
@@ -116,6 +122,7 @@ export default function GameContainer({ sessionCode }: Props) {
             </TableSlot>
             {slots.slot3 && (
               <AnswerSlots
+                sessionCode={sessionCode}
                 id="answerSlot3"
                 comments={slots.slot3.comments || []}
               />
