@@ -9,7 +9,7 @@ interface Comments {
 
 interface Card {
   id: number;
-  sessionCardId: number;
+  sessionId: number;
   content: string;
   comments?: Comments[];
 }
