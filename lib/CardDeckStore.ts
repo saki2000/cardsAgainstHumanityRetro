@@ -4,7 +4,7 @@ interface Comments {
   id: number;
   authorName: string;
   content: string;
-  vouteCount: number;
+  voteCount: number;
 }
 
 interface Card {

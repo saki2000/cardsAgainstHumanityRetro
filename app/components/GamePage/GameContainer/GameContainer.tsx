@@ -75,9 +75,10 @@ export default function GameContainer({ sessionCode }: Props) {
             </TableSlot>
 
             {slots.slot1 && (
-              <AnswerSlots id="answerSlot1">
-                <span className="text-gray-400">Drop Answer Here</span>
-              </AnswerSlots>
+              <AnswerSlots
+                id="answerSlot1"
+                comments={slots.slot1.comments || []}
+              />
             )}
           </div>
 
@@ -94,9 +95,10 @@ export default function GameContainer({ sessionCode }: Props) {
               )}
             </TableSlot>
             {slots.slot2 && (
-              <AnswerSlots id="answerSlot2">
-                <span className="text-gray-400">Drop Answer Here</span>
-              </AnswerSlots>
+              <AnswerSlots
+                id="answerSlot2"
+                comments={slots.slot2.comments || []}
+              />
             )}
           </div>
 
@@ -113,9 +115,10 @@ export default function GameContainer({ sessionCode }: Props) {
               )}
             </TableSlot>
             {slots.slot3 && (
-              <AnswerSlots id="answerSlot3">
-                <span className="text-gray-400">Drop Answer Here</span>
-              </AnswerSlots>
+              <AnswerSlots
+                id="answerSlot3"
+                comments={slots.slot3.comments || []}
+              />
             )}
           </div>
         </div>

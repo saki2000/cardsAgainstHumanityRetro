@@ -1,11 +1,13 @@
 import { useDroppable } from "@dnd-kit/core";
+import CommentDisplay from "../CommentDisplay/CommentDisplay";
+import { Comments } from "@/lib/GameStore";
 
 interface Props {
   id: string;
-  children?: React.ReactNode;
+  comments: Comments[];
 }
 
-export default function AnswerSlots({ id, children }: Props) {
+export default function AnswerSlots({ id, comments }: Props) {
   const { isOver, setNodeRef } = useDroppable({
     id: id,
     data: {
@@ -21,9 +23,17 @@ export default function AnswerSlots({ id, children }: Props) {
     <div
       ref={setNodeRef}
       id={id}
-      className={`h-64 w-64 border-2 rounded-lg flex items-center justify-center  transition-colors ${style}`}
+      className={`min-h-64 w-full border-2 border-dashed rounded-lg flex flex-col p-2 bg-gray-700 transition-colors overflow-y-auto ${style}`}
     >
-      {children}
+      {comments && comments.length > 0 ? (
+        comments.map((comment) => (
+          <CommentDisplay key={comment.id} comment={comment} />
+        ))
+      ) : (
+        <div className="flex-grow flex items-center justify-center text-gray-400 ">
+          <span>Drop Answer Here</span>
+        </div>
+      )}
     </div>
   );
 }
