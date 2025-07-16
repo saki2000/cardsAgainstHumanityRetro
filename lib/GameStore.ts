@@ -10,6 +10,7 @@ interface JoinSessionPayload {
 interface Player {
   id: number;
   username: string;
+  score: number;
 }
 
 type MessageCallback = (msg: {
