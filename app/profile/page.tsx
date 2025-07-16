@@ -1,7 +1,11 @@
 import ProfileDetailsTable from "../components/ProfilePage/ProfileDetailsTable/ProfileDetailsTable";
 import ReturnButton from "../components/ReturnButton/ReturnButton";
+import { getServerSession } from "next-auth";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const session = await getServerSession();
+  const username = session?.user?.name;
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-black px-2 py-8">
       <div className="w-full max-w-4xl">
@@ -14,7 +18,7 @@ export default function ProfilePage() {
           </h1>
           <div className="w-full sm:w-auto" />
         </div>
-        <ProfileDetailsTable />
+        <ProfileDetailsTable username={username} />
       </div>
     </div>
   );

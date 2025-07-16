@@ -1,24 +1,66 @@
-export default function ProfileDetailsTable() {
-  // TODO: make this page dynamic, fetching user data from the server (maybe using email?)
-  const atributes = ["Name", "Email", "Best Score", "Games Played"];
+"use client";
+
+import axios from "axios";
+import { useEffect, useState } from "react";
+
+export type Users = {
+  id: string;
+  username: string;
+  email: string;
+  bestScore: number;
+  gamesPlayed: number;
+};
+
+interface Props {
+  username?: string | null;
+}
+
+export default function ProfileDetailsTable({ username }: Props) {
+  const [userData, setUserData] = useState<Users | null>(null);
+
+  useEffect(() => {
+    if (!username) return;
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.post(`/api/users/retrieve`, {
+          userName: username,
+        });
+        console.log("User data fetched:", response.data);
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [username]);
+
+  const attributes = [
+    { label: "Name", value: userData?.username },
+    { label: "Email", value: userData?.email },
+    { label: "Best Score", value: userData?.bestScore },
+    { label: "Games Played", value: userData?.gamesPlayed },
+  ];
 
   return (
     <div className="overflow-x-auto">
       <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg bg-white w-full mx-auto">
         <table className="min-w-full text-sm text-left">
           <tbody>
-            {atributes.map((atribute) => (
+            {attributes.map((attribute) => (
               <tr
-                key={atribute}
+                key={attribute.label}
                 className="even:bg-gray-100 odd:bg-white hover:bg-gray-200 transition"
               >
                 <th
                   scope="row"
                   className="px-6 py-4 font-semibold text-gray-700 capitalize whitespace-nowrap border-r border-gray-300"
                 >
-                  {atribute}
+                  {attribute.label}
                 </th>
-                <td className="px-6 py-4 text-gray-900">{"value"}</td>
+                <td className="px-6 py-4 text-gray-900">
+                  {attribute.value ?? "-"}
+                </td>
               </tr>
             ))}
           </tbody>
