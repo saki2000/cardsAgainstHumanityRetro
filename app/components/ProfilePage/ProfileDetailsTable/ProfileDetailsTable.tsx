@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export type Users = {
   id: string;
@@ -27,8 +28,14 @@ export default function ProfileDetailsTable({ username }: Props) {
         });
         console.log("User data fetched:", response.data);
         setUserData(response.data);
+        toast.success("User data retrieved successfully", {
+          position: "bottom-right",
+        });
       } catch (error) {
         console.error("Error fetching user data:", error);
+        toast.error("Error fetching user data", {
+          position: "bottom-right",
+        });
       }
     };
 
