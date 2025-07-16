@@ -1,4 +1,4 @@
-import { Comments, useGameStore } from "@/lib/GameStore_";
+import { Comments, useGameStore } from "@/lib/GameStore";
 import { useState } from "react";
 
 interface Props {

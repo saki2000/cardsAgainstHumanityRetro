@@ -1,6 +1,6 @@
 "use client";
 
-import { useGameStore } from "@/lib/GameStore_";
+import { useGameStore } from "@/lib/GameStore";
 
 export default function PlayerList() {
   const players = useGameStore((state) => state.players);
