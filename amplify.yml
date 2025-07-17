@@ -9,7 +9,7 @@ frontend:
         - npm ci
     build:
       commands:
-        - env | grep -e NEXTAUTH_ -e COGNITO_ -e NEXT_PUBLIC_ >> .env.production
+        - env | grep -e NEXTAUTH_ -e COGNITO_ -e NEXT_PUBLIC_ -e NEXT_PUBLIC_API_URL >> .env.production
         - npm run build
   artifacts:
     baseDirectory: .next
