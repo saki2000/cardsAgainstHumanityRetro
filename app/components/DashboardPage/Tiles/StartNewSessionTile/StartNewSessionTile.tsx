@@ -51,6 +51,7 @@ export default function StartNewSessionTile({
     }
 
     try {
+      console.log("URL", process.env.NEXT_PUBLIC_API_URL);
       const response = await axios.post("/api/session/create", payload, {
         headers: {
           "Content-Type": "application/json",
