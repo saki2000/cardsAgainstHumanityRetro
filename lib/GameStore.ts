@@ -104,7 +104,10 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
 
   connectSocket: () => {
     if (get().socket) return;
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
+    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
+      path: "/socket.io",
+      transports: ["websocket"],
+    });
 
     socket.on("player_joined", (username: string) => {
       get()._emitMessage({
