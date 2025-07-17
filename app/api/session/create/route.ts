@@ -3,6 +3,8 @@ import axios from "axios";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    console.log("URL:", process.env.NEXT_PUBLIC_API_URL);
+    console.log("Body:", body);
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/session/create`,
       body,
