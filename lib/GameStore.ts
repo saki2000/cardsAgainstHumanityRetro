@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import io from "socket.io-client";
-
+import { useCardDeckStore } from "@/lib/CardDeckStore";
 interface JoinSessionPayload {
   username: string;
   email: string;
@@ -19,6 +19,29 @@ type MessageCallback = (msg: {
 
 let messageListeners: MessageCallback[] = [];
 
+export interface Comments {
+  id: number;
+  authorName: string;
+  content: string;
+  voteCount: number;
+}
+
+interface Card {
+  id: number;
+  sessionCardId: number;
+  content: string;
+  comments?: Comments[];
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type SlotId = "slot1" | "slot2" | "slot3";
+
+export interface Slots {
+  slot1: Card | null;
+  slot2: Card | null;
+  slot3: Card | null;
+}
+
 interface GameState {
   players: Player[];
   hostId: number | null;
@@ -27,15 +50,16 @@ interface GameState {
   socket: SocketIOClient.Socket | null;
   sessionStarted: boolean;
   sessionEnded: boolean;
+  slots: Record<string, Card | null>;
 }
 
 interface GameActions {
   connectSocket: () => void;
   joinSession: (payload: JoinSessionPayload) => void;
-  // emitLeaveSession: (payload: LeaveSessionPayload) => void;
   disconnectAndCleanup: () => void;
 
   isCurrentUserHost: () => boolean;
+  isCurrentUserCardHolder: () => boolean;
   getCardHolder: () => Player | undefined;
   getHostNameById: (id: number) => string | null;
   startSession: (sessionCode: string) => void;
@@ -46,6 +70,13 @@ interface GameActions {
     text: string;
     type: "join" | "leave" | "host";
   }) => void;
+  playCard: (sessionCode: string, cardId: number, slotId: string) => void;
+  submitComment: (
+    sessionCode: string,
+    sessionCardId: number,
+    content: string,
+  ) => void;
+  voteForComment: (sessionCode: string, commentId: number) => void;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -56,6 +87,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   socket: null,
   sessionStarted: false,
   sessionEnded: false,
+  slots: {},
 
   subscribeToMessages: (cb: MessageCallback) => {
     messageListeners.push(cb);
@@ -106,15 +138,25 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         players: gameState.players,
         hostId: gameState.hostId,
         cardHolderId: gameState.cardHolderId,
+        sessionStarted: gameState.sessionStarted,
+        slots: gameState.slots,
       });
+      if (gameState.slots) {
+        useCardDeckStore.getState().setSlots({
+          slot1: gameState.slots.slot1 || null,
+          slot2: gameState.slots.slot2 || null,
+          slot3: gameState.slots.slot3 || null,
+        });
+      }
     });
 
     socket.on("session_ended", () => {
       set({ sessionEnded: true });
     });
 
-    socket.on("session_started", () => {
-      set({ sessionStarted: true });
+    socket.on("deal_cards", (cards: Card[]) => {
+      console.log("Received private hand:", cards);
+      useCardDeckStore.getState().setHand(cards);
     });
 
     set({ socket });
@@ -166,6 +208,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     return me ? me.id === hostId : false;
   },
 
+  isCurrentUserCardHolder: () => {
+    const { cardHolderId, currentUser, players } = get();
+    if (!currentUser) return false;
+    const me = players.find((p) => p.username === currentUser.username);
+    return me ? me.id === cardHolderId : false;
+  },
+
   getCardHolder: () => {
     const { cardHolderId } = get();
     return cardHolderId
@@ -176,5 +225,35 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   getHostNameById: (id: number) => {
     const { players } = get();
     return players.find((p) => p.id === id)?.username || null;
+  },
+
+  playCard: (sessionCode: string, cardId: number, slotId: string) => {
+    const socket = get().socket;
+    if (socket && sessionCode) {
+      socket.emit("play_card", { sessionCode, cardId, slotId });
+      const { hand } = useCardDeckStore.getState();
+      useCardDeckStore.getState().setHand(hand.filter((c) => c.id !== cardId));
+    }
+  },
+
+  submitComment: (
+    sessionCode: string,
+    sessionCardId: number,
+    content: string,
+  ) => {
+    const socket = get().socket;
+    console.log(
+      `Submitting comment for card ID ${sessionCardId} with content: ${content} in session ${sessionCode}`,
+    );
+    if (socket && sessionCode) {
+      socket.emit("submit_comment", { sessionCode, sessionCardId, content });
+    }
+  },
+
+  voteForComment: (sessionCode, commentId) => {
+    const socket = get().socket;
+    if (socket && sessionCode) {
+      socket.emit("vote_comment", { commentId });
+    }
   },
 }));

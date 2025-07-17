@@ -4,17 +4,16 @@ import { signIn } from "next-auth/react";
 
 export default function SignInContainer() {
   return (
-    <div className="mt-34 border-6 p-16 bg-gray-800 rounded-lg flex flex-col items-center justify-center">
+    <div className="mt-34 border-6 p-8 bg-gray-800 rounded-lg flex flex-col items-center justify-center">
       <button
-        className="btn-primary font-bold text-xl"
+        className="bg-blue-500 hover:bg-blue-600 font-bold text-2xl cursor-pointer rounded-full w-48 h-48 flex items-center justify-center text-center"
         onClick={() => signIn("cognito")}
-        style={{ minWidth: 320 }}
       >
-        Log In
+        Let&apos;s
         <br />
-        or
         <br />
-        Sign Up
+        Retro
+        <br />
       </button>
     </div>
   );

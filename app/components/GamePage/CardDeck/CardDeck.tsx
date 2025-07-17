@@ -1,10 +1,23 @@
+"use client";
+
+import { useCardDeckStore } from "@/lib/CardDeckStore";
+import Card from "../Card/Card";
+
 export default function CardDeck() {
+  const hand = useCardDeckStore((state) => state.hand);
+
   return (
-    <div className="flex flex-col items-center justify-center border-2 p-4 bg-gray-800 rounded-lg">
-      <h2 className="text-2xl font-bold text-white mb-4">Card Deck</h2>
-      <p className="text-white">
-        This is where the card deck will be displayed.
-      </p>
+    <div className="p-4 bg-gray-600 rounded-lg bottom-4 left-4 right-4 shadow-inner mb-14 mt-8 max-w-full">
+      <div className="flex flex-wrap gap-2 justify-center items-center">
+        {hand.map((card) => (
+          <Card
+            key={card.id}
+            id={card.id.toString()}
+            text={card.content}
+            isDraggable={true}
+          />
+        ))}
+      </div>
     </div>
   );
 }
