@@ -52,11 +52,15 @@ export default function StartNewSessionTile({
 
     try {
       console.log("URL", process.env.NEXT_PUBLIC_API_URL);
-      const response = await axios.post("/api/session/create", payload, {
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/session/create`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
       setIsOpen(true);
       setSessionCode(response.data); //TODO: Adjust if your backend returns { code: ... }
       toast.success("Session created!", {
