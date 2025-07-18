@@ -1,58 +1,15 @@
 import { create } from "zustand";
 import io from "socket.io-client";
 import { useCardDeckStore } from "@/lib/CardDeckStore";
-interface JoinSessionPayload {
-  username: string;
-  email: string;
-  sessionCode: string;
-}
-
-interface Player {
-  id: number;
-  username: string;
-  score: number;
-}
-
-type MessageCallback = (msg: {
-  text: string;
-  type: "join" | "leave" | "host";
-}) => void;
+import {
+  Card,
+  GameState,
+  JoinSessionPayload,
+  MessageCallback,
+  Player,
+} from "@/app/types/customTypes";
 
 let messageListeners: MessageCallback[] = [];
-
-export interface Comments {
-  id: number;
-  authorName: string;
-  content: string;
-  voteCount: number;
-}
-
-interface Card {
-  id: number;
-  sessionCardId: number;
-  content: string;
-  comments?: Comments[];
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type SlotId = "slot1" | "slot2" | "slot3";
-
-export interface Slots {
-  slot1: Card | null;
-  slot2: Card | null;
-  slot3: Card | null;
-}
-
-interface GameState {
-  players: Player[];
-  hostId: number | null;
-  cardHolderId: number | null;
-  currentUser?: { username: string; email: string };
-  socket: SocketIOClient.Socket | null;
-  sessionStarted: boolean;
-  sessionEnded: boolean;
-  slots: Record<string, Card | null>;
-}
 
 interface GameActions {
   connectSocket: () => void;
