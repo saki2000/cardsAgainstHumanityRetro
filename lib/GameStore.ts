@@ -8,8 +8,11 @@ import {
   MessageCallback,
   Player,
 } from "@/app/types/customTypes";
+import { detectPlayerEvents } from "./detectPlayerEvents";
 
 let messageListeners: MessageCallback[] = [];
+let lastPlayers: Player[] = [];
+let lastHostId: number | null = null;
 
 interface GameActions {
   connectSocket: () => void;
@@ -66,25 +69,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       transports: ["websocket"],
     });
 
-    socket.on("player_joined", (username: string) => {
-      get()._emitMessage({
-        text: `${username} has joined the session`,
-        type: "join",
-      });
-    });
-
-    socket.on("player_left", (username: string) => {
-      get()._emitMessage({
-        text: `${username} has left the session`,
-        type: "leave",
-      });
-    });
-
-    socket.on("host_change", (hostId: number) => {
-      const hostName = get().getHostNameById(hostId);
-      get()._emitMessage({ text: `${hostName} is now the host`, type: "host" });
-    });
-
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
     });
@@ -95,6 +79,31 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     });
 
     socket.on("game_state_update", (gameState: GameState) => {
+      const events = detectPlayerEvents(lastPlayers, gameState, lastHostId);
+
+      // Emit messages for each event
+      events.forEach((event) => {
+        if (event.type === "join") {
+          get()._emitMessage({
+            text: `${event.username} has joined the session`,
+            type: "join",
+          });
+        } else if (event.type === "leave") {
+          get()._emitMessage({
+            text: `${event.username} has left the session`,
+            type: "leave",
+          });
+        } else if (event.type === "host") {
+          get()._emitMessage({
+            text: `${event.username} is now the host`,
+            type: "host",
+          });
+        }
+      });
+
+      lastPlayers = gameState.players;
+      lastHostId = gameState.hostId;
+
       set({
         players: gameState.players,
         hostId: gameState.hostId,
@@ -102,6 +111,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         sessionStarted: gameState.sessionStarted,
         slots: gameState.slots,
       });
+
       if (gameState.slots) {
         useCardDeckStore.getState().setSlots({
           slot1: gameState.slots.slot1 || null,
