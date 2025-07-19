@@ -107,6 +107,8 @@ export interface components {
       bestScore?: number;
       /** Format: int32 */
       gamesPlayed?: number;
+      /** Format: int32 */
+      totalPoints?: number;
     };
     SessionCreateRequest: {
       email: string;
