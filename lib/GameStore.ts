@@ -43,6 +43,7 @@ interface GameActions {
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
   sessionCode: null,
   players: [],
+  roundNumber: null,
   hostId: null,
   cardHolderId: null,
   socket: null,

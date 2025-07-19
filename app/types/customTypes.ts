@@ -53,7 +53,7 @@ export type MessageCallback = (msg: {
 
 export type GameState = {
   players: Player[];
-  roundNumber: number;
+  roundNumber: number | null;
   hostId: number | null;
   cardHolderId: number | null;
   currentUser?: { username: string; email: string };
