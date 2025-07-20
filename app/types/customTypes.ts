@@ -52,6 +52,7 @@ export type MessageCallback = (msg: {
 }) => void;
 
 export type GameState = {
+  sessionCode: string | null;
   players: Player[];
   roundNumber: number | null;
   hostId: number | null;

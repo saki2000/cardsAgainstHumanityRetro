@@ -18,7 +18,7 @@ interface GameActions {
   connectSocket: () => void;
   joinSession: (payload: JoinSessionPayload) => void;
   disconnectAndCleanup: () => void;
-
+  resetGame: () => void;
   isCurrentUserHost: () => boolean;
   isCurrentUserCardHolder: () => boolean;
   getCardHolder: () => Player | undefined;
@@ -40,16 +40,20 @@ interface GameActions {
   voteForComment: (sessionCode: string, commentId: number) => void;
 }
 
-export const useGameStore = create<GameState & GameActions>((set, get) => ({
+const initialState: GameState = {
   sessionCode: null,
+  roundNumber: 0,
   players: [],
-  roundNumber: null,
   hostId: null,
   cardHolderId: null,
   socket: null,
   sessionStarted: false,
   sessionEnded: false,
   slots: {},
+};
+
+export const useGameStore = create<GameState & GameActions>((set, get) => ({
+  ...initialState,
 
   subscribeToMessages: (cb: MessageCallback) => {
     messageListeners.push(cb);
@@ -168,9 +172,17 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   disconnectAndCleanup: () => {
     const socket = get().socket;
     if (socket) {
+      socket.removeAllListeners();
       socket.disconnect();
-      set({ socket: null, players: [], hostId: null, cardHolderId: null });
     }
+    get().resetGame();
+  },
+
+  resetGame: () => {
+    set(initialState);
+    messageListeners = [];
+    lastPlayers = [];
+    lastHostId = null;
   },
 
   isCurrentUserHost: () => {

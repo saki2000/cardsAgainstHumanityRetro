@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import PlayerList from "../PlayerList/PlayerList";
 import { useSession } from "next-auth/react";
 import { useGameStore } from "@/lib/GameStore";
@@ -24,7 +24,7 @@ export default function GameRoom({ sessionCode }: Props) {
   const socket = useGameStore((state) => state.socket);
   const gameStarted = useGameStore((state) => state.sessionStarted);
   const sessionEnded = useGameStore((state) => state.sessionEnded);
-  // const hasJoined = useRef(false);
+  const hasJoined = useRef(false);
 
   const { data: session, status } = useSession();
 
@@ -40,29 +40,19 @@ export default function GameRoom({ sessionCode }: Props) {
     }
   }, [status, connectSocket]);
 
-  // useEffect(() => {
-  //   if (
-  //     socket &&
-  //     session?.user?.name &&
-  //     session.user?.email &&
-  //     !hasJoined.current
-  //   ) {
-  //     joinSession({
-  //       username: session.user.name,
-  //       email: session.user.email,
-  //       sessionCode: sessionCode,
-  //     });
-  //     hasJoined.current = true;
-  //   }
-  // }, [socket, session, sessionCode, joinSession]);
-
   useEffect(() => {
-    if (socket && session?.user) {
+    if (
+      socket &&
+      session?.user?.name &&
+      session.user?.email &&
+      !hasJoined.current
+    ) {
       joinSession({
-        username: session.user.name!,
-        email: session.user.email!,
+        username: session.user.name,
+        email: session.user.email,
         sessionCode: sessionCode,
       });
+      hasJoined.current = true;
     }
   }, [socket, session, sessionCode, joinSession]);
 
