@@ -1,12 +1,11 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import type { components } from "@/app/types/api";
-
-export type ErrorResponse = components["schemas"]["ErrorResponse"];
+import { ErrorResponse } from "@/app/types/customTypes";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { code: string } },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any,
 ) {
   try {
     const { code } = context.params;
