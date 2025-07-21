@@ -10,7 +10,7 @@ interface SessionCodeBannerProps {
 }
 
 interface Message {
-  id: number;
+  id: string;
   text: string;
   type: "join" | "leave" | "host";
 }
@@ -29,7 +29,7 @@ export default function SessionCodeBanner({
 
   useEffect(() => {
     const unsubscribe = useGameStore.getState().subscribeToMessages((msg) => {
-      const newMessage = { id: Date.now(), ...msg };
+      const newMessage = { id: crypto.randomUUID(), ...msg };
       setMessages((prev) => [...prev, newMessage]);
       setTimeout(() => {
         setMessages((current) => current.filter((m) => m.id !== newMessage.id));

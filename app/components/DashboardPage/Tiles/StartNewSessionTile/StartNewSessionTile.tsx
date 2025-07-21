@@ -5,12 +5,7 @@ import { toast } from "react-toastify";
 import SessionCreatedModal from "../../SessionCreatedModal/SessionCreatedModal";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-
-//TODO: Replace with real
-type Temp = {
-  email: string;
-  name: string;
-};
+import { SessionCreateRequest } from "@/app/types/customTypes";
 
 type Props = {
   lockButton: boolean;
@@ -25,7 +20,7 @@ export default function StartNewSessionTile({
   const [isOpen, setIsOpen] = useState(false);
   const [sessionCode, setSessionCode] = useState("");
 
-  const buildPayload = (): Temp | null => {
+  const buildPayload = (): SessionCreateRequest | null => {
     if (!session || !session.user?.email || !session.user?.name) {
       toast.error("You must be logged in to start a session.", {
         position: "bottom-right",
@@ -51,19 +46,16 @@ export default function StartNewSessionTile({
     }
 
     try {
-      const response = await axios.post("/api/session/create", payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post("/api/session/create", payload);
       setIsOpen(true);
-      setSessionCode(response.data); //TODO: Adjust if your backend returns { code: ... }
+      setSessionCode(response.data);
       toast.success("Session created!", {
         position: "bottom-right",
       });
+
+      // TODO: fix later?
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      // TODO: manage errors better once backend is ready
       toast.error(
         "Failed to start session. Please try again." +
           (err.response?.data?.message ? ` ${err.response.data.message}` : ""),

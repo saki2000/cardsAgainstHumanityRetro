@@ -1,64 +1,24 @@
 import { create } from "zustand";
 import io from "socket.io-client";
 import { useCardDeckStore } from "@/lib/CardDeckStore";
-interface JoinSessionPayload {
-  username: string;
-  email: string;
-  sessionCode: string;
-}
-
-interface Player {
-  id: number;
-  username: string;
-  score: number;
-}
-
-type MessageCallback = (msg: {
-  text: string;
-  type: "join" | "leave" | "host";
-}) => void;
+import {
+  Card,
+  GameState,
+  JoinSessionPayload,
+  MessageCallback,
+  Player,
+} from "@/app/types/customTypes";
+import { detectPlayerEvents } from "./detectPlayerEvents";
 
 let messageListeners: MessageCallback[] = [];
-
-export interface Comments {
-  id: number;
-  authorName: string;
-  content: string;
-  voteCount: number;
-}
-
-interface Card {
-  id: number;
-  sessionCardId: number;
-  content: string;
-  comments?: Comments[];
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type SlotId = "slot1" | "slot2" | "slot3";
-
-export interface Slots {
-  slot1: Card | null;
-  slot2: Card | null;
-  slot3: Card | null;
-}
-
-interface GameState {
-  players: Player[];
-  hostId: number | null;
-  cardHolderId: number | null;
-  currentUser?: { username: string; email: string };
-  socket: SocketIOClient.Socket | null;
-  sessionStarted: boolean;
-  sessionEnded: boolean;
-  slots: Record<string, Card | null>;
-}
+let lastPlayers: Player[] = [];
+let lastHostId: number | null = null;
 
 interface GameActions {
   connectSocket: () => void;
   joinSession: (payload: JoinSessionPayload) => void;
   disconnectAndCleanup: () => void;
-
+  resetGame: () => void;
   isCurrentUserHost: () => boolean;
   isCurrentUserCardHolder: () => boolean;
   getCardHolder: () => Player | undefined;
@@ -80,8 +40,9 @@ interface GameActions {
   voteForComment: (sessionCode: string, commentId: number) => void;
 }
 
-export const useGameStore = create<GameState & GameActions>((set, get) => ({
+const initialState: GameState = {
   sessionCode: null,
+  roundNumber: 0,
   players: [],
   hostId: null,
   cardHolderId: null,
@@ -89,6 +50,10 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   sessionStarted: false,
   sessionEnded: false,
   slots: {},
+};
+
+export const useGameStore = create<GameState & GameActions>((set, get) => ({
+  ...initialState,
 
   subscribeToMessages: (cb: MessageCallback) => {
     messageListeners.push(cb);
@@ -109,25 +74,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       transports: ["websocket"],
     });
 
-    socket.on("player_joined", (username: string) => {
-      get()._emitMessage({
-        text: `${username} has joined the session`,
-        type: "join",
-      });
-    });
-
-    socket.on("player_left", (username: string) => {
-      get()._emitMessage({
-        text: `${username} has left the session`,
-        type: "leave",
-      });
-    });
-
-    socket.on("host_change", (hostId: number) => {
-      const hostName = get().getHostNameById(hostId);
-      get()._emitMessage({ text: `${hostName} is now the host`, type: "host" });
-    });
-
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
     });
@@ -138,6 +84,31 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     });
 
     socket.on("game_state_update", (gameState: GameState) => {
+      const events = detectPlayerEvents(lastPlayers, gameState, lastHostId);
+
+      // Emit messages for each event
+      events.forEach((event) => {
+        if (event.type === "join") {
+          get()._emitMessage({
+            text: `${event.username} has joined the session`,
+            type: "join",
+          });
+        } else if (event.type === "leave") {
+          get()._emitMessage({
+            text: `${event.username} has left the session`,
+            type: "leave",
+          });
+        } else if (event.type === "host") {
+          get()._emitMessage({
+            text: `${event.username} is now the host`,
+            type: "host",
+          });
+        }
+      });
+
+      lastPlayers = gameState.players;
+      lastHostId = gameState.hostId;
+
       set({
         players: gameState.players,
         hostId: gameState.hostId,
@@ -145,6 +116,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         sessionStarted: gameState.sessionStarted,
         slots: gameState.slots,
       });
+
       if (gameState.slots) {
         useCardDeckStore.getState().setSlots({
           slot1: gameState.slots.slot1 || null,
@@ -200,9 +172,17 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   disconnectAndCleanup: () => {
     const socket = get().socket;
     if (socket) {
+      socket.removeAllListeners();
       socket.disconnect();
-      set({ socket: null, players: [], hostId: null, cardHolderId: null });
     }
+    get().resetGame();
+  },
+
+  resetGame: () => {
+    set(initialState);
+    messageListeners = [];
+    lastPlayers = [];
+    lastHostId = null;
   },
 
   isCurrentUserHost: () => {

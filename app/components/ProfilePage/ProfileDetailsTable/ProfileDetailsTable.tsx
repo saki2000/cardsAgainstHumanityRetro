@@ -1,16 +1,9 @@
 "use client";
 
+import { Users } from "@/app/types/customTypes";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
-export type Users = {
-  id: string;
-  username: string;
-  email: string;
-  bestScore: number;
-  gamesPlayed: number;
-};
 
 interface Props {
   username?: string | null;
@@ -45,8 +38,9 @@ export default function ProfileDetailsTable({ username }: Props) {
   const attributes = [
     { label: "Name", value: userData?.username },
     { label: "Email", value: userData?.email },
-    { label: "Best Score", value: userData?.bestScore },
     { label: "Games Played", value: userData?.gamesPlayed },
+    { label: "Total Score", value: userData?.totalPoints },
+    { label: "Best Score", value: userData?.bestScore },
   ];
 
   return (
