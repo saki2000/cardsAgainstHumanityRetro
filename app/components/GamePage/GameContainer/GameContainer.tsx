@@ -6,12 +6,14 @@ import { useGameStore } from "@/lib/GameStore";
 import Card from "../Card/Card";
 import AnswerSlots from "../AnswerSlot/AnswerSlots";
 import AnswerDeck from "../../AnswerDeck/AnswerDeck";
+import { useState } from "react";
 
 interface Props {
   sessionCode: string;
 }
 
 export default function GameContainer({ sessionCode }: Props) {
+  const [answerText, setAnswerText] = useState("");
   const { slots } = useCardDeckStore();
   const playCard = useGameStore((state) => state.playCard);
   const submitComment = useGameStore((state) => state.submitComment);
@@ -51,6 +53,7 @@ export default function GameContainer({ sessionCode }: Props) {
           return;
         } //TODO: Need to refactor this function to smaller functions
         submitComment(sessionCode, playedCard.sessionCardId, answerText);
+        setAnswerText("");
       } else {
         console.error(
           `Could not find a played card in ${correspondingSlotKey} to comment on.`,
@@ -130,7 +133,11 @@ export default function GameContainer({ sessionCode }: Props) {
           </div>
         </div>
 
-        {isCurrentUserCardHolder() ? <CardDeck /> : <AnswerDeck />}
+        {isCurrentUserCardHolder() ? (
+          <CardDeck />
+        ) : (
+          <AnswerDeck answerText={answerText} setAnswerText={setAnswerText} />
+        )}
       </div>
     </DndContext>
   );
